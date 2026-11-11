@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+
+<html data-lang="zh" lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>Agentic Robotics · Robot Learning KB</title>
+<meta content="Agentic Robotics 方向综述：语言模型控制机器人的四种接口（2022–2026）。A survey of agentic robotics: four interfaces for controlling robots with language models (2022–2026)." name="description"/>
+<link href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231d1d1f'/%3E%3Ctext x='32' y='42' font-family='Helvetica,Arial' font-size='26' font-weight='700' text-anchor='middle' fill='%23fff'%3ERL%3C/text%3E%3C/svg%3E" rel="icon"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<script>
+(function () {
+  var l = 'zh';
+  try { var s = localStorage.getItem('kb-lang'); if (s === 'en' || s === 'zh') l = s; } catch (e) {}
+  try { var q = new URLSearchParams(location.search).get('lang'); if (q === 'en' || q === 'zh') l = q; } catch (e) {}
+  var h = document.documentElement;
+  h.setAttribute('data-lang', l);
+  h.lang = l === 'zh' ? 'zh-CN' : 'en';
+})();
+</script>
+<style>
+/* Shared academic article layout. */
+:root{
+  --page:#ffffff; --band:#f5f5f7; --fill:#e8e8ed; --hair:#d2d2d7;
+  --ink:#1d1d1f; --ink2:#6e6e73; --blue:#0071e3;
+  --done:#1a7f37; --pdf:#0b5cad; --pdf-bg:#e8f1fc; --fail:#d70015;
+  --wip:#9a5200; --wip-bg:#fff3dc; --warm:#b9875f; --warm-ink:#6b4226;
+  --cjk:"PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",sans-serif;
+  --display:"Inter Tight","Inter","Helvetica Neue",Arial,var(--cjk);
+  --text:"Inter","Helvetica Neue",Arial,var(--cjk);
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --gut:20px; --wide:1180px; --toc:200px; --tocgap:56px; --measure:720px;
+  --ease:cubic-bezier(.28,.11,.32,1);
+}
+@media (min-width:735px){:root{--gut:32px}}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:80px;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--page);color:var(--ink);font-family:var(--text);font-size:17px;line-height:1.75;letter-spacing:-.005em;-webkit-font-smoothing:antialiased;overflow-x:clip}
+html[data-lang="zh"] body{letter-spacing:0;font-size:16.5px;line-height:1.82}
+html[data-lang="zh"] [data-l="en"],html[data-lang="en"] [data-l="zh"]{display:none!important}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+img,video{max-width:100%;display:block}
+figure{margin:0}
+strong{font-weight:600}
+.cite{white-space:nowrap}
+
+/* site nav */
+.nav{position:fixed;z-index:50;top:max(8px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:min(1060px,calc(100% - 16px));height:52px;display:flex;align-items:center;gap:6px;padding:0 10px 0 18px;border-radius:18px;background:rgba(255,255,255,.8);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);box-shadow:0 0 0 1px rgba(0,0,0,.07),0 8px 28px rgba(0,0,0,.06)}
+.nav-title{font:600 17px/1 var(--display);letter-spacing:-.01em;color:var(--ink);white-space:nowrap}
+.nav-title:hover{text-decoration:none}
+.crumb{display:inline-flex;align-items:center;gap:8px;height:26px;padding:0 11px 0 10px;margin-left:4px;margin-right:auto;border-radius:999px;background:rgba(0,0,0,.04);box-shadow:inset 0 0 0 1px rgba(0,0,0,.06);color:var(--ink2);font:500 12px/1 var(--text);white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.lang{flex:none;height:30px;min-width:52px;padding:0 12px;border-radius:999px;border:1px solid var(--ink2);background:none;font:500 12px/1 var(--text);color:var(--ink)}
+.lang:hover{background:var(--band)}
+@media (max-width:420px){.nav-title .t-full{display:none}}
+@media (min-width:421px){.nav-title .t-short{display:none}}
+
+/* page frame: one text column, contents list on the left on wide screens */
+.wrap{width:min(var(--wide),calc(100% - 2 * var(--gut)));margin-inline:auto}
+@media (min-width:1180px){.with-toc{padding-left:calc(var(--toc) + var(--tocgap))}}
+.sec{padding:0}
+.prose>p,.prose>ul,.prose>ol,.prose>h2,.prose>h3{max-width:var(--measure)}
+.prose>p{margin:0 0 16px}
+
+/* article header */
+.art-head{padding-top:112px}
+.crumbs{margin:0 0 16px;font-size:13.5px;color:var(--ink2)}
+.crumbs a{color:var(--ink2)}
+.crumbs a:hover{color:var(--blue)}
+.art-head h1{margin:0;max-width:24em;font:600 32px/1.3 var(--display);letter-spacing:-.014em;text-wrap:balance}
+html[data-lang="zh"] .art-head h1{letter-spacing:.01em;line-height:1.42}
+@media (min-width:735px){.art-head h1{font-size:37px}}
+.byline{margin:14px 0 0;font-size:14px;color:var(--ink2)}
+.abstract{max-width:var(--measure);margin:26px 0 0;padding:16px 20px;border-left:3px solid var(--ink);border-radius:0 12px 12px 0;background:var(--band)}
+.abstract .lbl{margin:0 0 6px;font:600 14px/1.4 var(--display)}
+.abstract p{margin:0;font-size:15.5px;line-height:1.75}
+html[data-lang="zh"] .abstract p{line-height:1.8}
+
+/* headings */
+h2.sh{margin:56px 0 14px;font:600 25px/1.4 var(--display);letter-spacing:-.01em;scroll-margin-top:84px;text-wrap:balance}
+html[data-lang="zh"] h2.sh{letter-spacing:0}
+.prose h3{margin:32px 0 10px;font:600 19px/1.5 var(--display);scroll-margin-top:84px}
+h2.sh .no,.prose h3 .no{margin-right:.55em;font-variant-numeric:tabular-nums}
+
+/* lists that replaced the cards */
+.defs,.routes{margin:4px 0 22px;padding-left:1.3em}
+.defs li,.routes li{margin:0 0 12px}
+.defs strong,.routes strong{display:block;margin-bottom:2px;font-weight:600}
+.defs strong{display:inline;margin-right:10px}
+.defs .lv{display:inline;font-size:13px;color:var(--ink2)}
+.routes li::marker{font-weight:600;color:var(--ink2)}
+
+/* contents */
+.toc ol{list-style:none;margin:0;padding:0}
+.toc a{position:relative;display:flex;align-items:baseline;gap:8px;padding:5px 10px;color:var(--ink2);font-size:13px;line-height:1.4}
+.toc a:hover{color:var(--ink);text-decoration:none}
+.toc .no{flex:none;min-width:18px;font-variant-numeric:tabular-nums}
+.toc ol ol a{padding:3px 10px 3px 36px;font-size:12.5px}
+.toc ol ol .no{min-width:30px}
+.toc a.on{color:var(--ink);font-weight:600}
+.toc a.on::before{content:"";position:absolute;left:-1px;top:6px;bottom:6px;width:2px;border-radius:2px;background:var(--blue)}
+.toc-float{display:none}
+@media (min-width:1180px){
+  .toc-float{display:flex;flex-direction:column;position:fixed;z-index:40;top:112px;left:max(var(--gut),calc((100vw - var(--wide)) / 2));width:var(--toc);max-height:calc(100% - 140px)}
+  .toc-inline{display:none}
+}
+.toc-head{display:flex;align-items:baseline;justify-content:space-between;padding:0 10px 8px;font:600 13px/1 var(--display);color:var(--ink)}
+.toc-head .pct{font:500 11px/1 var(--mono);color:var(--ink2)}
+.toc-bar{flex:none;height:2px;margin:0 10px 8px 0;background:var(--fill);overflow:hidden}
+.toc-bar i{display:block;width:0;height:100%;background:var(--blue)}
+.toc-list{overflow:auto;border-left:1px solid var(--fill)}
+.toc-foot{display:flex;gap:14px;margin:10px 0 0;padding-left:10px;font-size:12px}
+.toc-foot a{color:var(--ink2);white-space:nowrap}
+.toc-inline{max-width:var(--measure);margin:22px 0 0;padding:12px 8px 10px;border:1px solid var(--fill);border-radius:12px}
+.toc-inline .lbl{display:block;padding:0 10px 6px;font:600 13px/1 var(--display)}
+@media (min-width:735px){.toc-inline>ol{columns:2;column-gap:20px}.toc-inline li{break-inside:avoid}}
+
+/* figures and tables */
+.fig,.tbl-block{max-width:920px;margin:26px 0 30px}
+.tile{padding:12px;border-radius:14px;background:var(--band)}
+.fig-cap,.tbl-cap{margin:10px 2px 0;font-size:13.5px;line-height:1.65;color:var(--ink2)}
+.fig-cap b,.tbl-cap b{margin-right:6px;color:var(--ink);font-weight:600}
+.tbl-cap{margin:0 2px 8px}
+.fig-grid{display:grid;grid-template-columns:1fr;gap:14px 12px}
+@media (min-width:600px){.fig-grid.c2,.fig-grid.c3{grid-template-columns:1fr 1fr}}
+@media (min-width:900px){.fig-grid.c3{grid-template-columns:1fr 1fr 1fr}}
+.sub figcaption{margin:7px 2px 0;font-size:12.5px;line-height:1.5;color:var(--ink2)}
+.ph{position:relative;overflow:hidden;background:#101114;aspect-ratio:16/9;border-radius:10px}
+.ph.light{background:#fff}
+.ph>video,.ph>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ph>.fit{object-fit:contain}
+.tag{position:absolute;left:8px;top:8px;z-index:3;display:inline-flex;align-items:center;gap:6px;height:21px;padding:0 8px 0 7px;border-radius:999px;background:rgba(255,255,255,.86);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);font:500 10.5px/1 var(--text);color:var(--ink);pointer-events:none}
+.tag i{width:6px;height:6px;border-radius:50%;background:var(--ink2)}
+.tag.sim i{background:var(--blue)}
+.tag.hw i{background:var(--done)}
+.credit{position:absolute;right:8px;bottom:8px;z-index:3;max-width:72%;padding:3px 7px;border-radius:7px;background:rgba(0,0,0,.55);color:#fff;font:500 10px/1.2 var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.play,.ytb{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:0;padding:0;color:#fff;background:linear-gradient(180deg,rgba(0,0,0,0) 35%,rgba(0,0,0,.45))}
+.ytb{background-size:cover;background-position:center}
+.ytb::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05) 35%,rgba(0,0,0,.5))}
+.pbtn{position:relative;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.9);box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.pbtn::after{content:"";position:absolute;left:17px;top:13px;border-style:solid;border-width:9px 0 9px 14px;border-color:transparent transparent transparent var(--ink)}
+.play em,.ytb em{position:relative;font:500 11px/1 var(--text);font-style:normal;padding:5px 9px;border-radius:999px;background:rgba(0,0,0,.5)}
+.ph iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.mwrap{position:relative}
+.mtabs{position:absolute;right:8px;top:8px;z-index:4;display:flex;gap:2px;padding:2px;border-radius:999px;background:rgba(255,255,255,.88)}
+.mtabs button{height:20px;padding:0 9px;border:0;border-radius:999px;background:none;font:500 10.5px/1 var(--text);color:var(--ink2)}
+.mtabs button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.mtabs button.f[aria-pressed="true"]{background:var(--fail)}
+
+/* figure 2: control stack */
+.stack{display:grid;gap:10px}
+.stack-lm{display:flex;flex-direction:column;justify-content:center;padding:14px 16px;border-radius:12px;background:var(--ink);color:#fff;font:600 15px/1.35 var(--display)}
+.stack-lm small{display:block;margin-top:6px;font:400 12px/1.45 var(--text);color:rgba(255,255,255,.75)}
+.stack-rows{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.stack-rows li{display:grid;grid-template-columns:minmax(0,1fr) 16px minmax(0,1fr);gap:6px;align-items:stretch}
+.si,.sl{padding:10px 12px;border-radius:10px;font-size:12.5px;line-height:1.45}
+.si{background:var(--page);box-shadow:0 0 0 1px var(--hair)}
+.si b,.sl b{display:block;font:600 14px/1.35 var(--display);color:var(--ink)}
+.si .d,.sl .d{display:block;margin-top:3px;color:var(--ink2)}
+.arr{display:grid;place-items:center;color:var(--ink2);font-size:13px}
+.stack-rows li:nth-child(1) .sl{background:#ececf1}
+.stack-rows li:nth-child(2) .sl{background:#e1e1e7}
+.stack-rows li:nth-child(3) .sl{background:#d5d5dc}
+.stack-rows li:nth-child(4) .sl{background:#c8c8d0}
+.stack-rows li.motor{grid-template-columns:1fr}
+.stack-rows li.motor .sl{background:#3a3a3f;text-align:center}
+.stack-rows li.motor .sl b{color:#fff}
+.stack-axis{display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px;line-height:1.5;color:var(--ink2)}
+.stack-axis .bot{text-align:right}
+@media (min-width:735px){
+  .stack{grid-template-columns:140px minmax(0,1fr) 140px;gap:14px}
+  .stack-axis{position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:4px 0 4px 18px}
+  .stack-axis::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;border-radius:2px;background:linear-gradient(#c8c8d0,#3a3a3f)}
+  .stack-axis .bot{text-align:left}
+}
+
+/* figure 8: System 2 / 1 / 0 */
+.s3{display:grid;grid-template-columns:1fr;gap:10px}
+@media (min-width:900px){.s3{grid-template-columns:minmax(0,1fr) 60px minmax(0,1fr) 60px minmax(0,1fr);align-items:start}}
+.s3-col{display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:12px;background:var(--page)}
+.s3-h{font:600 15px/1.2 var(--display);text-align:center}
+.s3-in{font-size:12px;line-height:1.4;color:var(--ink2);text-align:center}
+.s3-box{padding:12px 10px;border-radius:10px;background:var(--ink);color:#fff;text-align:center;font:600 14px/1.3 var(--display)}
+.s3-out{font-size:12px;color:var(--ink2);text-align:center}
+.s3-q{padding:8px 10px;border-radius:9px;background:#fbf6f1;box-shadow:inset 0 0 0 1.5px var(--warm);font-size:12.5px;line-height:1.5;color:var(--warm-ink)}
+.s3-link{display:flex;align-items:center;justify-content:center;gap:6px;color:var(--ink2);font-size:12px;line-height:1.35;text-align:center}
+.s3-link b{font-size:15px;font-weight:400}
+.s3-link .h{display:none}
+@media (min-width:900px){.s3-link{flex-direction:column;padding-top:88px}.s3-link .v{display:none}.s3-link .h{display:inline}}
+.s3-foot{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px;padding:12px;border-radius:12px;background:var(--page)}
+.s3-foot .k{font:600 12.5px/1.4 var(--display);color:var(--ink)}
+@media (min-width:735px){.s3-foot{grid-template-columns:minmax(0,.8fr) minmax(0,1fr) minmax(0,1fr);align-items:center}}
+
+/* figure 3: timeline */
+.tl{overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;padding:4px 2px 10px;scroll-snap-type:x proximity}
+.tl-track{display:flex;align-items:stretch;gap:10px;width:max-content;position:relative;padding-top:28px}
+.tl-track::before{content:"";position:absolute;left:0;right:0;top:12px;height:2px;background:var(--hair)}
+.tl-year{flex:none;scroll-snap-align:start;padding:2px 4px 0 2px;font:600 22px/1 var(--display);letter-spacing:-.02em;color:var(--ink2)}
+.tl-node{flex:none;width:166px;scroll-snap-align:start;position:relative;display:flex;flex-direction:column;gap:5px;padding:12px 14px 14px;border-radius:12px;background:var(--page);color:var(--ink)}
+.tl-node:hover{text-decoration:none;box-shadow:0 0 0 1px var(--ink2)}
+.tl-node::before{content:"";position:absolute;top:-21px;left:16px;width:10px;height:10px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 3px var(--band)}
+.tl-node.rep::before{border-radius:2px;background:var(--ink)}
+.tl-node .d{font:500 11px/1 var(--mono);color:var(--ink2)}
+.tl-node .t{font:600 14.5px/1.3 var(--display)}
+.tl-node .o{font-size:12px;line-height:1.4;color:var(--ink2)}
+
+/* tables (booktabs) */
+.tbl-tile{padding:0;background:none}
+.tbl{overflow-x:auto;overscroll-behavior-x:contain}
+.tbl table{width:100%;min-width:700px;border-collapse:collapse;font-size:13.5px;line-height:1.55;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
+.tbl th{padding:9px 10px 7px;text-align:left;vertical-align:bottom;font-size:12.5px;font-weight:600;color:var(--ink);border-bottom:1px solid var(--ink);white-space:nowrap}
+.tbl td{padding:8px 10px;text-align:left;vertical-align:top;border-bottom:1px solid var(--fill)}
+.tbl tbody tr:last-child td{border-bottom:0}
+.tbl td.w{font-weight:600;white-space:nowrap}
+.tbl td.w .cite{font-weight:400}
+.ifc{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;white-space:nowrap;background:#f0f0f3;color:var(--ink)}
+.ifc.program{background:#eef0ff;color:#3c46b5}
+.ifc.supervise{background:#e9f8f2;color:#0d7a5f}
+.ifc.direct{background:#fff0f3;color:#b0124a}
+.ifc.multi,.ifc.unknown{background:none;box-shadow:inset 0 0 0 1px var(--hair);color:var(--ink2)}
+
+/* references, notes, footer */
+.refs{list-style:none;margin:0;padding:0;max-width:var(--measure);font-size:14px;line-height:1.6}
+.refs li{display:grid;grid-template-columns:40px 1fr;gap:6px;padding:5px 6px;border-radius:8px;scroll-margin-top:90px;transition:background .6s var(--ease)}
+.refs li.hl{background:#fff6d6}
+.refs .rn{font:500 12px/1.85 var(--mono);color:var(--ink2)}
+.refs .rt{font-weight:600}
+.refs .rl{white-space:nowrap}
+.st-pdf{display:inline-block;margin-left:6px;padding:0 8px;border-radius:999px;background:var(--pdf-bg);color:var(--pdf);font-size:11.5px;line-height:20px}
+.sec-notes{margin-top:48px;padding-block:24px 30px;border-top:1px solid var(--fill);font-size:13px;line-height:1.7;color:var(--ink2)}
+.sec-notes p{max-width:var(--measure);margin:0 0 8px}
+footer{margin-top:24px;padding:22px 0 36px;border-top:1px solid var(--hair);font-size:12px;line-height:1.6;color:var(--ink2)}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 24px}
+footer a{color:var(--ink2);text-decoration:underline;text-underline-offset:2px}
+</style>
+<style data-section="sgs"></style><meta content="no-referrer" name="referrer"/></head>
+<body>
+<nav aria-label="Robot Learning KB" class="nav">
+<a class="nav-title" href="../index.html"><span class="t-full">Robot Learning KB</span><span class="t-short">RL KB</span></a>
+<span class="crumb"><span data-l="zh">Agentic Robotics · 方向综述</span><span data-l="en">Agentic Robotics · Survey</span></span>
+<button aria-label="Switch language / 切换语言" class="lang" id="lang" type="button"><span data-l="zh">EN</span><span data-l="en">中文</span></button>
+</nav>
+<aside aria-label="Contents" class="toc toc-float" id="tocSide">
+<div class="toc-head"><span><span data-l="zh">目录</span><span data-l="en">Contents</span></span><span class="pct" id="tocPct">0%</span></div>
+<div class="toc-bar"><i id="tocBar"></i></div>
+<div class="toc-list" id="tocList"></div>
+<div class="toc-foot"><a href="#top">↑ <span data-l="zh">回到顶部</span><span data-l="en">Top</span></a><a href="../index.html"><span data-l="zh">返回总览</span><span data-l="en">Overview</span></a></div>
+</aside>
+<main id="art">
+<header class="art-head" id="top">
+<div class="wrap with-toc">
+<p class="crumbs"><a href="../index.html">Robot Learning KB</a> / <span data-l="zh">Agentic Robotics</span><span data-l="en">Agentic Robotics</span></p>
+<h1><span data-l="zh">Agentic Robotics：语言模型控制机器人的四种接口（2022–2026）</span><span data-l="en">Agentic Robotics: Four Interfaces for Controlling Robots with Language Models (2022–2026)</span></h1>
+<p class="byline" id="heroMeta"></p>
+<div class="abstract" id="abstract"><p class="lbl"><span data-l="zh">摘要</span><span data-l="en">Abstract</span></p><p data-l="zh">本文梳理 Agentic Robotics 方向：用没有在机器人数据上训练过的通用语言模型（LLM 或 VLM）控制机器人。我们按语言模型的输出进入机器人控制栈的位置，把相关工作分为四类：Skill Selection、Program Synthesis、Policy Supervision 和 Direct Control。2022–2023 年的工作集中在前两类，语言模型负责规划或编写代码，执行依赖预先构建的技能、Perception API 和 Motion Planner；2024–2025 年，随着 VLA 等 Learned Policy 成熟，语言模型更多承担编排角色；2025–2026 年，前沿通用模型开始在“编写整套机器人软件”和“逐步输出动作”两端被直接评测。现有证据表明，同一模型在不同接口下的表现差异很大；高层规划进步最快，而精细的闭环控制仍是主要瓶颈。我们还用 System 2/1/0 三层架构分析了 System 2 变强后下两层的演变，辩证地讨论了 Direct Control 的速度瓶颈，并介绍了让 System 2 离开控制回路、为下层构建仿真与数据的 Agentic Real2Sim。文中多数定量结果来自原作者或公司自报，测试条件不同，不宜直接比较。</p><p data-l="en">This page surveys agentic robotics: controlling robots with general-purpose language models (LLMs or VLMs) that were not trained on robot data. We group the work by where the language model's output enters the robot's control stack: skill selection, program synthesis, policy supervision and direct control. Work in 2022–2023 concentrated on the first two, with the language model planning or writing code while execution relied on prebuilt skills, perception APIs and motion planners. In 2024–2025, as learned policies such as VLAs matured, language models increasingly took an orchestrating role. In 2025–2026, frontier general-purpose models began to be evaluated directly at both ends: writing a robot's entire software stack and emitting actions step by step. The evidence so far shows that the same model performs very differently across interfaces, and that high-level planning is improving fastest while fine closed-loop control remains the main bottleneck. We also use the System 2/1/0 architecture to analyze how the lower layers change as System 2 grows stronger, examine the latency bottleneck of direct control dialectically, and review Agentic Real2Sim, which moves System 2 out of the control loop to build simulations and data for the layers below. Most quantitative results here are self-reported by authors or companies under different conditions and should not be compared directly.</p></div>
+<nav aria-label="Contents" class="toc toc-inline" id="tocInline"><span class="lbl"><span data-l="zh">目录</span><span data-l="en">Contents</span></span>
+<ol>
+<li><a href="#s1"><span class="no">1</span><span><span data-l="zh">引言</span><span data-l="en">Introduction</span></span></a></li>
+<li><a href="#s2"><span class="no">2</span><span><span data-l="zh">按控制接口的分类</span><span data-l="en">Taxonomy by interface</span></span></a></li>
+<li><a href="#s3"><span class="no">3</span><span><span data-l="zh">Skill Selection</span><span data-l="en">Skill selection</span></span></a></li>
+<li><a href="#s4"><span class="no">4</span><span><span data-l="zh">Program Synthesis</span><span data-l="en">Program synthesis</span></span></a></li>
+<li><a href="#s5"><span class="no">5</span><span><span data-l="zh">Policy Supervision</span><span data-l="en">Policy supervision</span></span></a></li>
+<li><a href="#s6"><span class="no">6</span><span><span data-l="zh">Direct Control</span><span data-l="en">Direct control</span></span></a></li>
+<li><a href="#s-arch"><span class="no">7</span><span><span data-l="zh">System 2/1/0 架构</span><span data-l="en">System 2 / 1 / 0</span></span></a></li>
+<li><a href="#s-lat"><span class="no">8</span><span><span data-l="zh">速度瓶颈</span><span data-l="en">The latency problem</span></span></a></li>
+<li><a href="#s-r2s"><span class="no">9</span><span><span data-l="zh">Agentic Real2Sim</span><span data-l="en">Agentic Real2Sim</span></span></a></li>
+<li><a href="#s7"><span class="no">10</span><span><span data-l="zh">评测方法与基准</span><span data-l="en">Evaluation</span></span></a></li>
+<li><a href="#s8"><span class="no">11</span><span><span data-l="zh">讨论</span><span data-l="en">Discussion</span></span></a><ol><li><a href="#s8-1"><span class="no">11.1</span><span><span data-l="zh">程序与动作</span><span data-l="en">Programs vs. actions</span></span></a></li><li><a href="#s8-2"><span class="no">11.2</span><span><span data-l="zh">通用与专用</span><span data-l="en">General vs. specialized</span></span></a></li><li><a href="#s8-3"><span class="no">11.3</span><span><span data-l="zh">成本与安全</span><span data-l="en">Cost and safety</span></span></a></li><li><a href="#s8-4"><span class="no">11.4</span><span><span data-l="zh">精细闭环控制</span><span data-l="en">Fine closed-loop control</span></span></a></li></ol></li>
+<li><a href="#refs"><span class="no"></span><span><span data-l="zh">参考文献</span><span data-l="en">References</span></span></a></li>
+</ol>
+</nav>
+</div>
+</header>
+<section class="sec" id="s1">
+<div class="wrap with-toc prose">
+<h2 class="sh"><span class="no">1</span><span data-l="zh">用通用语言模型控制机器人：动机与范围</span><span data-l="en">Controlling robots with general-purpose language models: motivation and scope</span></h2>
+<p data-l="zh">机器人学习的主流路线是在机器人数据上训练专门的策略：从模仿学习、RL，到近年在大规模 Teleop 数据上训练的 VLA。Agentic Robotics 走的是另一条路：直接使用为语言、代码和网页任务训练的通用模型，通过提示、工具调用和代码把它接到机器人上。这条路线的吸引力在于，这些模型已经具备常识、推理、编程和使用工具的能力，而且不需要为每台机器人重新收集数据。</p>
+<p data-l="en">The mainstream of robot learning trains specialized policies on robot data, from imitation and reinforcement learning to the recent VLAs trained on large teleoperation datasets. Agentic robotics takes another route: it connects general-purpose models trained for language, code and web tasks to a robot through prompts, tool calls and code. The appeal is that these models already bring common sense, reasoning, programming and tool use, and they do not need new data for every robot.</p>
+<p data-l="zh">这一思路并不新。2022 年的 SayCan [1] 和 Code as Policies [4] 已经让语言模型规划任务、编写控制程序。但长期以来的共识是：语言模型适合做高层规划，不适合 Direct Control，理由包括推理延迟高、空间理解不足和物理常识欠缺（Isola [24] 对这些质疑有简要总结）。2026 年的几项工作开始挑战这一共识。在 Anthropic 的 Project Fetch 第二期 [16] 中，Claude Opus 4.7 几乎独立完成了一台四足机器人从连接、感知到控制的全部编程；NVIDIA 的 Astranomy [29] 和第三方机构 Robocurve [21, 22] 把 GPT-6 Astra 和 Claude Fable 5/5.1 直接当作机械臂策略来评测；Claude Fable 5.2 的发布报告 [32] 给出了 RoboDojo 仿真双臂基准上的成绩和真机演示（图 1）。</p>
+<p data-l="en">The idea is not new. In 2022, SayCan [1] and Code as Policies [4] already had language models plan tasks and write control programs. But the long-standing consensus was that language models suit high-level planning rather than direct control, because of high inference latency, weak spatial understanding and limited physical common sense (Isola [24] summarizes these objections). Several 2026 results began to challenge that consensus. In phase two of Anthropic's Project Fetch [16], Claude Opus 4.7 programmed a quadruped robot almost entirely on its own, from connecting to it through perception and control. NVIDIA's Astranomy [29] and the third-party lab Robocurve [21, 22] evaluated GPT-6 Astra and Claude Fable 5/5.1 directly as arm policies. The Claude Fable 5.2 launch report [32] gives scores on the RoboDojo simulated two-arm benchmark and shows real-robot demonstrations (Figure 1).</p>
+<figure class="fig" id="fig1">
+<div class="tile"><div class="ph">
+<video aria-label="Robots controlled by Claude Fable 5.2" autoplay="" id="leadVideo" loop="" muted="" playsinline="" poster="https://cdn.sanity.io/images/4zrzovbb/website/ac27f20504f84372f4a88432f798b80db1f64dea-1440x810.webp" preload="auto" src="https://cdn.sanity.io/files/4zrzovbb/website/55746b9b0dd3e76d36a38998162cc852d5f92edc.webm"></video>
+<span class="tag hw"><i></i><span data-l="zh">真机</span><span data-l="en">Hardware</span></span>
+<span class="credit">anthropic.com</span>
+</div></div>
+<figcaption class="fig-cap"><b><span data-l="zh">图 1</span><span data-l="en">Figure 1</span></b><span data-l="zh">Claude Fable 5.2 控制机器人解魔方、拧瓶盖和画画 [32]。发布报告没有说明所用的硬件，也没有说明模型以何种方式下达控制指令。</span><span data-l="en">Robots controlled by Claude Fable 5.2 solve a puzzle cube, unscrew a bottle cap and draw a picture [32]. The launch report does not state the hardware or how the model issued commands.</span></figcaption>
+</figure>
+<p data-l="zh">本文的组织如下。第 2 节提出按控制接口的分类，这是理解各项工作差异的关键：Anthropic 的系统性评测 [17] 发现，同一个模型仅仅改变与机器人的连接方式，表现就可以从几乎完全失败变为完成真实任务。第 3–6 节依次讨论四类接口的代表工作。第 7 节换一个角度，用 System 2/1/0 三层架构分析 System 2 变强之后下两层的变化；第 8 节辩证地讨论 Direct Control 的速度瓶颈和可能的出路；第 9 节介绍 Agentic Real2Sim。第 10 节讨论评测方法，第 11 节讨论尚未解决的问题。</p>
+<p data-l="en">The page is organized as follows. Section 2 proposes a taxonomy by control interface, the key to understanding how these works differ: a systematic evaluation by Anthropic [17] found that the same model can go from near-total failure to completing real tasks just by changing how it is connected to the robot. Sections 3–6 discuss representative work for each interface. Section 7 takes another view, using the System 2/1/0 architecture to analyze how the two lower layers change as System 2 grows stronger; Section 8 examines the latency bottleneck of direct control and possible ways out; and Section 9 reviews Agentic Real2Sim. Section 10 covers evaluation and Section 11 open problems.</p>
+</div>
+</section>
+<section class="sec" id="s2">
+<div class="wrap with-toc prose">
+<h2 class="sh"><span class="no">2</span><span data-l="zh">按控制接口的分类</span><span data-l="en">A taxonomy by control interface</span></h2>
+<p data-l="zh">对这一方向，最有用的分类依据是：语言模型的输出在哪一层进入机器人的控制栈（图 2）。从高到低有四种位置。</p>
+<p data-l="en">The most useful way to classify this work is by the layer of the robot's control stack at which the language model's output enters (Figure 2). From top to bottom there are four positions.</p>
+<ul class="defs">
+<li><strong><span data-l="zh">Skill Selection</span><span data-l="en">Skill selection</span></strong><span class="lv"><span data-l="zh">输出进入任务层</span><span data-l="en">Enters at the task level</span></span><br/><span data-l="zh">模型从预先训练好的 Skill Library 中选出下一步执行的技能，或从“前进、旋转、拍照”这类高层动作中选择。</span><span data-l="en">The model picks the next skill from a library of pretrained skills, or from high-level actions such as “move forward”, “rotate” and “take a picture”.</span> <span data-l="zh">代表工作：</span><span data-l="en">Examples: </span>SayCan [1] · Inner Monologue [2] · ProgPrompt [3] · Butter-Bench [12]</li>
+<li><strong><span data-l="zh">Program Synthesis</span><span data-l="en">Program synthesis</span></strong><span class="lv"><span data-l="zh">输出进入程序层</span><span data-l="en">Enters at the program level</span></span><br/><span data-l="zh">模型编写控制程序、3D Value Map 或 reward 函数，交给 Perception API、Motion Planner 或 RL 执行。</span><span data-l="en">The model writes control programs, 3D value maps or reward functions, which perception APIs, motion planners or reinforcement learning then execute.</span> <span data-l="zh">代表工作：</span><span data-l="en">Examples: </span>Code as Policies [4] · VoxPoser [5] · Eureka [6] · Project Fetch [14, 16] · Waddle [23]</li>
+<li><strong><span data-l="zh">Policy Supervision</span><span data-l="en">Policy supervision</span></strong><span class="lv"><span data-l="zh">输出进入策略层</span><span data-l="en">Enters at the policy level</span></span><br/><span data-l="zh">模型向预训练的 Learned Policy（通常是 VLA）下达语言指令，或审核它提出的动作。</span><span data-l="en">The model gives language commands to a pretrained learned policy, usually a VLA, or reviews the actions it proposes.</span> <span data-l="zh">代表工作：</span><span data-l="en">Examples: </span>AutoRT [7] · Helix [8] · Hi Robot [9] · Gemini Robotics 1.5 [11]</li>
+<li><strong><span data-l="zh">Direct Control</span><span data-l="en">Direct control</span></strong><span class="lv"><span data-l="zh">输出进入动作层</span><span data-l="en">Enters at the action level</span></span><br/><span data-l="zh">模型在每一步输出末端目标、关节力矩或动作，下层只剩底层控制器。</span><span data-l="en">The model outputs end-effector targets, joint torques or actions at every step, leaving only a low-level controller below it.</span> <span data-l="zh">代表工作：</span><span data-l="en">Examples: </span>Claude plays robotics [17] · Robocurve [21, 22] · Astranomy [29]</li>
+</ul>
+<figure class="fig" id="fig2">
+<div class="tile">
+<div class="stack">
+<div class="stack-lm"><span data-l="zh">通用语言模型</span><span data-l="en">General-purpose language model</span><small><span data-l="zh">LLM 或 VLM，未在机器人数据上训练</span><span data-l="en">LLM or VLM, not trained on robot data</span></small></div>
+<ol class="stack-rows">
+<li><div class="si"><b><span data-l="zh">Skill Selection</span><span data-l="en">Skill selection</span></b><span class="d"><span data-l="zh">输出下一步执行的技能</span><span data-l="en">Outputs the next skill to run</span></span></div><div aria-hidden="true" class="arr">→</div><div class="sl"><b><span data-l="zh">任务层</span><span data-l="en">Task level</span></b><span class="d"><span data-l="zh">Skill Library、高层动作</span><span data-l="en">Skill library, high-level actions</span></span></div></li>
+<li><div class="si"><b><span data-l="zh">Program Synthesis</span><span data-l="en">Program synthesis</span></b><span class="d"><span data-l="zh">输出控制程序、Value Map 或 reward 代码</span><span data-l="en">Outputs control programs, value maps or reward code</span></span></div><div aria-hidden="true" class="arr">→</div><div class="sl"><b><span data-l="zh">程序层</span><span data-l="en">Program level</span></b><span class="d"><span data-l="zh">Perception API、Motion Planner、RL</span><span data-l="en">Perception APIs, motion planners, RL</span></span></div></li>
+<li><div class="si"><b><span data-l="zh">Policy Supervision</span><span data-l="en">Policy supervision</span></b><span class="d"><span data-l="zh">输出给 VLA 的语言指令，或对其动作的审核</span><span data-l="en">Outputs language commands to a VLA, or reviews of its actions</span></span></div><div aria-hidden="true" class="arr">→</div><div class="sl"><b><span data-l="zh">策略层</span><span data-l="en">Policy level</span></b><span class="d"><span data-l="zh">VLA、Whole-Body Controller（数十至数百 Hz）</span><span data-l="en">VLAs, whole-body controllers (tens to hundreds of Hz)</span></span></div></li>
+<li><div class="si"><b><span data-l="zh">Direct Control</span><span data-l="en">Direct control</span></b><span class="d"><span data-l="zh">每一步输出末端目标、关节力矩或动作</span><span data-l="en">Outputs end-effector targets, joint torques or actions every step</span></span></div><div aria-hidden="true" class="arr">→</div><div class="sl"><b><span data-l="zh">动作层</span><span data-l="en">Action level</span></b><span class="d"><span data-l="zh">底层控制器</span><span data-l="en">Low-level controller</span></span></div></li>
+<li class="motor"><div class="sl"><b><span data-l="zh">电机与传感器</span><span data-l="en">Motors and sensors</span></b></div></li>
+</ol>
+<div class="stack-axis">
+<span class="top"><span data-l="zh">↑ 越靠上，越依赖下层已有的能力：Skill Library、Perception API、规划器、VLA</span><span data-l="en">↑ Higher up, the system relies more on what the layers below can already do: skills, perception APIs, planners, VLAs</span></span>
+<span class="bot"><span data-l="zh">↓ 越靠下，模型越需要自己完成闭环控制：每一步都要推理，受延迟限制</span><span data-l="en">↓ Lower down, the model must close the loop itself: inference at every step, limited by latency</span></span>
+</div>
+</div>
+</div>
+<figcaption class="fig-cap"><b><span data-l="zh">图 2</span><span data-l="en">Figure 2</span></b><span data-l="zh">语言模型的输出进入机器人控制栈的四个位置。越靠上，系统能做什么越取决于下层已有的模块；越靠下，模型越需要自己完成闭环控制，也越受推理延迟的限制。</span><span data-l="en">Four positions at which a language model's output enters the robot control stack. Higher up, what the system can do depends more on the modules below; lower down, the model must close the control loop itself and is more limited by inference latency.</span></figcaption>
+</figure>
+<p data-l="zh">这四种位置之间存在明确的取舍。接口越靠上，模型处理的问题越抽象，但系统能做什么受限于下层已有的能力：Skill Library 里没有的技能无法被选中，Perception API 识别不了的物体无法写进程序，VLA 做不到的动作也不会因为监督而出现。接口越靠下，系统越不依赖预先构建的模块，但模型必须自己完成闭环控制，也就是每一步都根据新的观测修正动作；而一次推理往往需要数秒到数十秒（Astranomy 直接模式平均每次调用约 18.6 秒 [29]），这对需要快速反馈的接触操作十分不利。</p>
+<p data-l="en">These positions involve a clear trade-off. The higher the interface, the more abstract the problem the model handles, but what the system can do is limited by the layers below: a skill missing from the library cannot be selected, an object the perception API cannot recognize cannot be written into a program, and an action the VLA cannot perform will not appear through supervision. The lower the interface, the less the system depends on prebuilt modules, but the model must close the control loop itself, correcting its actions from each new observation, while a single inference often takes seconds to tens of seconds (about 18.6 s per call in Astranomy's direct mode [29]). That is a serious handicap for contact-rich manipulation, which needs fast feedback.</p>
+<p data-l="zh">[17] 的结果直观地体现了这一取舍：在机械臂操作任务上，模型直接驱动关节时完整完成任务的比例只有 0–5.5%；改为监督一个预训练的 VLA 后，表现大幅提高；而对人形机器人，目前的模型只有借助预训练策略才能控制。Astranomy [29] 在同一基准上比较了 GPT-6 Astra 的三种用法：直接输出末端动作（66.3%）、审核 World Action Model 给出的 Action Chunk（66.5%），以及在 Codex 中以 agent 会话运行、可以编写代码并调用工具（74.8%）。最后一种效果最好，但每回合成本约为直接模式的 18 倍。</p>
+<p data-l="en">Results in [17] make the trade-off concrete. On arm manipulation, models driving the joints directly completed the full task only 0–5.5% of the time; supervising a pretrained VLA instead raised performance substantially; and current models could control a humanoid only through a pretrained policy. Astranomy [29] compared three ways of using GPT-6 Astra on one benchmark: emitting end-effector actions directly (66.3%), reviewing action chunks proposed by a world action model (66.5%), and running as an agent session in Codex that can write code and call tools (74.8%). The last worked best but cost about 18 times as much per episode as the direct mode.</p>
+<p data-l="zh">从时间上看，研究前沿大致沿这四个位置自上而下推进（图 3）：2022–2023 年以 Skill Selection 和 Program Synthesis 为主，2024–2025 年以 Policy Supervision 为主；从 2025 年起，前沿通用模型开始在 Program Synthesis 和 Direct Control 两端被直接评测。表 1 列出了本页收录工作的归类。</p>
+<p data-l="en">Over time, the research frontier has moved roughly down through these positions (Figure 3): skill selection and program synthesis dominated 2022–2023, policy supervision dominated 2024–2025, and from 2025 frontier general-purpose models began to be evaluated directly at both the program-synthesis and direct-control ends. Table 1 classifies the works covered on this page.</p>
+<figure class="fig" id="fig3">
+<div class="tile">
+<div aria-label="Timeline" class="tl" tabindex="0"><div class="tl-track" id="tlTrack"></div></div>
+</div>
+<figcaption class="fig-cap"><b><span data-l="zh">图 3</span><span data-l="en">Figure 3</span></b><span data-l="zh">本页收录工作的时间线。圆点为学术论文，方块为公司报告、博客或评测；点击可跳到对应的参考文献。在窄屏上可以左右滑动。</span><span data-l="en">Timeline of the works covered. Dots are academic papers; squares are company reports, blogs or evaluations. Click an item to jump to its reference; swipe sideways on narrow screens.</span></figcaption>
+</figure>
+<div class="tbl-block" id="tab1">
+<p class="tbl-cap"><b><span data-l="zh">表 1</span><span data-l="en">Table 1</span></b><span data-l="zh">代表工作的接口归类、模型输出与执行层（按时间排列；表格可左右滚动）。</span><span data-l="en">Representative works by interface, model output and executor, in chronological order (the table scrolls sideways).</span></p>
+<div class="tile tbl-tile"><div class="tbl"><table>
+<thead><tr>
+<th><span data-l="zh">工作</span><span data-l="en">Work</span></th>
+<th><span data-l="zh">接口</span><span data-l="en">Interface</span></th>
+<th><span data-l="zh">模型输出</span><span data-l="en">Model outputs</span></th>
+<th><span data-l="zh">下层执行</span><span data-l="en">Executor</span></th>
+<th><span data-l="zh">机器人</span><span data-l="en">Robot</span></th>
+<th><span data-l="zh">主要结果</span><span data-l="en">Key result</span></th>
+</tr></thead>
+<tbody id="t1body"></tbody>
+</table></div></div>
+</div>
+</div>
+</section>
+<section class="sec" id="s3">
+<div class="wrap with-toc prose">
+<h2 class="sh"><span class="no">3</span><span data-l="zh">语言模型作为任务规划器</span><span data-l="en">Language models as task planners</span></h2>
+<p data-l="zh">SayCan [1] 是这一类工作的起点。它把规划拆成两个分数：语言模型评估某个技能对完成指令“是否有用”，每个技能自带的 Value Function 评估它在当前状态下“能否成功”，两者相乘选出下一步。这样，语言模型的常识被约束在机器人实际能做的范围内。在真实办公室厨房的 101 条指令上，PaLM-SayCan 的规划成功率为 84%，执行成功率为 74%。</p>
+<p data-l="en">SayCan [1] is the starting point for this class. It splits planning into two scores: the language model estimates whether a skill is useful for the instruction, and each skill's value function estimates whether it can succeed in the current state; the product of the two picks the next step. This keeps the language model's common sense within what the robot can actually do. On 101 instructions in a real office kitchen, PaLM-SayCan planned correctly 84% of the time and executed successfully 74% of the time.</p>
+<p data-l="zh">SayCan 的规划是开环的：某个技能执行失败后，规划器并不知道。Inner Monologue [2] 把成功检测、场景描述和人的反馈以文本形式写回提示，让语言模型可以根据执行结果重新规划，并在仿真桌面、真实桌面和真实厨房三种场景中验证了这种闭环。ProgPrompt [3] 改变的是提示的形式：用 Python 风格的程序列出可用动作和场景中的物体，并给出示例程序，让模型生成带断言检查的任务程序；它在 VirtualHome 家务任务和真实机械臂上做了验证。</p>
+<p data-l="en">SayCan plans open-loop: when a skill fails, the planner does not know. Inner Monologue [2] writes success detection, scene descriptions and human feedback back into the prompt as text, letting the language model replan from execution results, and demonstrated this closed loop in simulated tabletop, real tabletop and real kitchen settings. ProgPrompt [3] changes the form of the prompt instead: it lists available actions and scene objects as Python-style programs with example programs, and the model generates task programs with assertion checks; it was validated on VirtualHome household tasks and a real arm.</p>
+<figure class="fig">
+<div class="tile">
+<div class="fig-grid c3" data-media="saycan innermono progprompt"></div>
+</div>
+<figcaption class="fig-cap"><b><span data-l="zh">图 4</span><span data-l="en">Figure 4</span></b><span data-l="zh">Skill Selection 类工作。视频均来自各项目页或 YouTube。</span><span data-l="en">Skill-selection work. Videos come from each project page or YouTube.</span></figcaption>
+</figure>
+<p data-l="zh">这类方法的上限由 Skill Library 决定：语言模型只负责“选”，不负责“做”，新任务需要新技能。2025 年的 Butter-Bench [12] 用这种接口重新测量了前沿模型的编排能力：模型控制一台扫地机器人形态的移动机器人，只能调用“前进、旋转、导航到坐标、拍照”等高层动作，在办公室里完成“把黄油递过来”的任务。表现最好的 Gemini 2.5 Pro 完成率为 40%，Claude Opus 4.1 为 37%，人类平均为 95%；失败主要来自空间推理，例如原地反复旋转直至迷失方向。第 7 节会再讨论这一基准的设计。</p>
+<p data-l="en">The ceiling of this approach is set by the skill library: the language model only chooses and does not act, so new tasks require new skills. In 2025, Butter-Bench [12] used this interface to measure the orchestration ability of frontier models again. The model controls a mobile robot with the form factor of a robot vacuum and can only call high-level actions such as move forward, rotate, navigate to a coordinate and take a picture, with the task of passing the butter in an office. The best model, Gemini 2.5 Pro, completed 40% and Claude Opus 4.1 37%, against 95% for humans; failures came mostly from spatial reasoning, such as rotating in place until disoriented. Section 7 returns to the benchmark's design.</p>
+</div>
+</section>
+<section class="sec" id="s4">
+<div class="wrap with-toc prose">
+<h2 class="sh"><span class="no">4</span><span data-l="zh">以代码表示策略</span><span data-l="en">Policies as code</span></h2>
+<p data-l="zh">与技能列表相比，代码的表达能力强得多：可以有循环和条件判断，可以做数值计算，还可以调用感知和控制接口。Code as Policies [4] 让语言模型直接生成 Python 策略代码；遇到尚未定义的函数时，再递归地生成这个函数，从而组合出更复杂的行为。同一方法被用在桌面机械臂、白板绘画和移动机器人上。</p>
+<p data-l="en">Code is far more expressive than a list of skills: it allows loops and conditionals, arithmetic, and calls to perception and control APIs. Code as Policies [4] has the language model write Python policy code directly; when the code calls a function that does not exist yet, the model generates that function recursively, composing more complex behavior. The same method was applied to tabletop arms, whiteboard drawing and a mobile robot.</p>
+<p data-l="zh">随后的工作把代码当作构造其他中间表示的手段。VoxPoser [5] 让语言模型编写代码调用 VLM，在 3D 体素空间中组合出“该去哪里”和“该避开哪里”的 Value Map，再由 Motion Planner 沿 Value Map 生成轨迹，整个过程不需要训练。Eureka [6] 把同样的思路用在 reward 设计上：语言模型编写 reward 函数代码，用 RL 训练，再根据训练结果反思并修改，形成类似进化搜索的迭代。在 29 个环境、10 种机器人上，它在 83% 的任务中超过了人类专家编写的 reward，并让仿真中的 Shadow Hand 学会了快速转笔。</p>
+<p data-l="en">Later work used code to build other intermediate representations. VoxPoser [5] has the language model write code that queries a vision-language model to compose 3D value maps in voxel space, marking where to go and what to avoid; a motion planner then generates trajectories along the maps, without any training. Eureka [6] applies the same idea to reward design: the language model writes reward-function code, reinforcement learning trains a policy with it, and the model reflects on the results and revises, iterating like an evolutionary search. Across 29 environments and 10 robots it beat expert-written rewards on 83% of tasks, and it taught a simulated Shadow Hand fast pen spinning.</p>
+<p data-l="zh">2025–2026 年，Program Synthesis 的规模发生了变化：模型不再只写一段策略函数，而是编写一台机器人的整套软件。Anthropic 的 Project Fetch 第一期 [14] 让 8 名没有机器人经验的员工分成两组，为 Unitree Go2 四足机器人编程，目标是让它自主捡回沙滩球，其中只有一组可以使用 Claude（Opus 4.1）。使用 Claude 的一组完成了 8 项任务中的 7 项（另一组 6 项），在两组都完成的任务上用时约为一半。第二期 [16] 把同样的任务交给 Claude Opus 4.7，在 Claude Code 中独立完成，研究员只负责连接电脑、输入初始提示和批准命令。四项任务共用时 9 分 35 秒，而不使用 Claude 的人类组用了 361 分钟；模型编写了 1,045 行代码，使用 Claude 的人类组则写了 10,309 行。但模型没能完成最后一步：把球精确地推回起点。这一步需要根据球的实时位置不断修正推动方式，正是闭环控制。</p>
+<p data-l="en">In 2025–2026 the scale of program synthesis changed: models began writing a robot's entire software stack rather than a single policy function. In phase one of Anthropic's Project Fetch [14], eight staff with no robotics experience were split into two teams to program a Unitree Go2 quadruped to fetch a beach ball on its own, and only one team could use Claude (Opus 4.1). The team with Claude finished 7 of 8 tasks (the other team 6) and took about half the time on tasks both teams finished. Phase two [16] gave the same tasks to Claude Opus 4.7 working alone in Claude Code, with a researcher only connecting the laptop, typing the first prompt and approving commands. It finished the four tasks in 9 min 35 s, against 361 min for the team without Claude, and wrote 1,045 lines of code, against 10,309 for the team with Claude. It did not complete the last step, nudging the ball precisely back to the start, which requires correcting each push from the ball's current position: closed-loop control.</p>
+<p data-l="zh">Waddle [23] 把这种方式做成了产品：agent 把目标拆成子任务，查看相机画面、编写控制代码，需要时把 VLA 当作工具调用，交付的是一段可以运行、可以通过对话继续修改的程序。其演示包括叠 T 恤、插入 USB 接头、用子 agent 协调多台机器人，以及一夜之间自主完成约 1,000 次乐高抓放，再用这些数据从头训练一个 ACT 策略。Astranomy [29] 的 agent 模式也属于这一类：GPT-6 Astra 在持续的 Codex 会话中编写代码、调用工具，这是该研究中效果最好的设置（见第 2 节）。</p>
+<p data-l="en">Waddle [23] turns this approach into a product. Its agent splits a goal into subtasks, looks at the camera feeds, writes control code and calls VLAs as tools when needed; what it delivers is a program that runs and can be refined through conversation. Its demonstrations include folding a T-shirt, inserting a USB connector, subagents coordinating several robots, and about 1,000 autonomous overnight LEGO pick-and-places whose data were then used to train an ACT policy from scratch. Astranomy's [29] agent mode belongs here too: GPT-6 Astra writes code and calls tools in a persistent Codex session, the best-performing setting in that study (Section 2).</p>
+<figure class="fig">
+<div class="tile">
+<div class="fig-grid c3" data-media="cap voxposer eureka pf2 waddle astra_agent"></div>
+</div>
+<figcaption class="fig-cap"><b><span data-l="zh">图 5</span><span data-l="en">Figure 5</span></b><span data-l="zh">Program Synthesis 类工作。(d) 可以切换到 Project Fetch 中模型未能完成的推球片段。超过 8 MB 的视频点击后才加载。</span><span data-l="en">Program-synthesis work. Panel (d) can switch to the ball-nudging step the model failed in Project Fetch. Videos over 8 MB load on click.</span></figcaption>
+</figure>
+</div>
+</section>
+<section class="sec" id="s5">
+<div class="wrap with-toc prose">
+<h2 class="sh"><span class="no">5</span><span data-l="zh">语言模型编排 Learned Policy</span><span data-l="en">Language models orchestrating learned policies</span></h2>
+<p data-l="zh">当 Learned Policy 能够理解语言指令后，Skill Library 就可以替换为一个通用的低层策略，语言模型的角色随之变为 Orchestrator。AutoRT [7] 是较早的大规模尝试：VLM 描述场景，语言模型提出任务，再用一套“机器人宪法”过滤掉不安全或不可行的任务，然后分派给 teleoperator 或自主策略执行。系统最多同时调度 20 台机器人，在多栋楼宇中收集了 7.7 万条真机 episode，覆盖 6,650 条不同的指令。</p>
+<p data-l="en">Once learned policies can follow language, the skill library can be replaced by one general low-level policy, and the language model becomes an orchestrator. AutoRT [7] was an early large-scale attempt: a vision-language model describes the scene, a language model proposes tasks, a “robot constitution” filters out unsafe or infeasible ones, and the tasks are dispatched to teleoperators or autonomous policies. The system ran up to 20 robots at once and collected 77,000 real-robot episodes across several buildings, covering 6,650 distinct instructions.</p>
+<p data-l="zh">2025 年的工业系统普遍采用快慢两层的结构。Figure 的 Helix [8] 中，System 2 是一个 7B 参数的 VLM，以 7–9 Hz 运行，负责理解场景和语言；System 1 是一个 80M 参数的 Visuomotor Policy，以 200 Hz 输出整个上半身的动作；两者端到端训练，System 2 通过一个隐向量把意图传给 System 1。Physical Intelligence 的 Hi Robot [9] 用高层 VLM 理解开放式指令，以及执行过程中用户的插话和纠正，把它们转换成简单的语言命令交给 π0 执行，在收拾餐桌、做三明治和买杂货等任务上进行了验证。</p>
+<p data-l="en">Industrial systems in 2025 widely adopted a fast–slow two-level design. In Figure's Helix [8], System 2 is a 7B-parameter vision-language model running at 7–9 Hz that understands the scene and language, and System 1 is an 80M-parameter visuomotor policy that outputs actions for the whole upper body at 200 Hz; the two are trained end to end, with System 2 passing its intent to System 1 as a latent vector. Physical Intelligence's Hi Robot [9] uses a high-level VLM to interpret open-ended instructions as well as the user's interjections and corrections during execution, turning them into simple language commands for π0; it was tested on table bussing, sandwich making and grocery shopping.</p>
+<p data-l="zh">Google DeepMind 的 Gemini Robotics 1.5 [11] 把这种分工明确为两个模型：Embodied Reasoning 模型 ER 1.5 负责规划、估计任务进度，并能原生调用 Google 搜索等工具；VLA 模型 Gemini Robotics 1.5 接收每一步的自然语言指令并执行，执行前也会先生成推理过程。官方给出的例子是让机器人先上网查询当地的垃圾分类规则，再把物品分进对应的桶。2026 年的 Gemini Robotics 2 [19] 延续了这一结构，同时发布了 VLA、ER 2 和可在机器人本地运行的 On-Device 2 三个模型，其中 ER 2 通过 Gemini API 公开。</p>
+<p data-l="en">Google DeepMind's Gemini Robotics 1.5 [11] makes this division explicit as two models. The embodied-reasoning model ER 1.5 plans, estimates task progress and can natively call tools such as Google Search; the VLA model Gemini Robotics 1.5 receives a natural-language instruction for each step and executes it, generating its reasoning before acting. The official example has the robot look up local recycling rules online before sorting items into the right bins. Gemini Robotics 2 [19] in 2026 keeps this structure and releases three models together, the VLA, ER 2 and On-Device 2 that runs on the robot, with ER 2 public through the Gemini API.</p>
+<p data-l="zh">Policy Supervision 的关键问题是：上层模型的介入到底是增益还是干扰。[17] 发现，模型监督 VLA 时，组合系统的表现仍略低于 VLA 单独运行。较早的模型会抵消 VLA 的大部分能力；最新的模型能识别哪些提议的动作会失败、不再盲目服从，因而恢复了大部分性能，并在 VLA 单独做不到的任务上带来净增益。</p>
+<p data-l="en">The key question for policy supervision is whether the upper model helps or interferes. [17] found that a model supervising a VLA still did slightly worse than the VLA alone. Older models erased most of the VLA's value; the latest models recognize which proposed actions will fail and stop deferring blindly, recovering most of the performance and adding net value on tasks the VLA cannot do alone.</p>
+<figure class="fig">
+<div class="tile">
+<div class="fig-grid c3" data-media="autort helix hirobot gr15 gr2"></div>
+</div>
+<figcaption class="fig-cap"><b><span data-l="zh">图 6</span><span data-l="en">Figure 6</span></b><span data-l="zh">Policy Supervision 类工作。超过 8 MB 的视频点击后才加载。</span><span data-l="en">Policy-supervision work. Videos over 8 MB load on click.</span></figcaption>
+</figure>
+</div>
+</section>
+<section class="sec" id="s6">
+<div class="wrap with-toc prose">
+<h2 class="sh"><span class="no">6</span><span data-l="zh">通用模型作为机器人策略</span><span data-l="en">General-purpose models as robot policies</span></h2>
+<p data-l="zh">Direct Control 是最接近“把语言模型当作策略”的设置：模型在每一步接收相机图像和机器人状态，输出末端目标、关节力矩或 Action Chunk，下层只剩底层控制器。由于没有预训练技能或 VLA 兜底，这一设置最直接地检验模型自身的空间理解和闭环控制能力，也最受推理延迟的影响。</p>
+<p data-l="en">Direct control is the setting closest to treating a language model as a policy: at every step the model receives camera images and the robot's state and outputs end-effector targets, joint torques or action chunks, with only a low-level controller below it. With no pretrained skills or VLA to fall back on, this setting tests the model's own spatial understanding and closed-loop control most directly, and it is the most affected by inference latency.</p>
+<p data-l="zh">[17] 在多种机器人上系统地测试了这一接口。在倒立摆等经典控制任务上，模型直接选择每一步施加的力或力矩；在四足机器人上，较新的模型已能完成有限但有意义的站立、平衡和行走；在机械臂上，较新的模型更擅长接近物体、建立接触和抓取，但完整完成任务的比例只有 0–5.5%。</p>
+<p data-l="en">[17] tested this interface systematically across robots. On classic control tasks such as balancing an inverted pendulum, the model chooses the force or torque to apply at each step. On quadrupeds, newer models achieve limited but meaningful standing, balancing and walking. On arms, newer models are better at reaching objects, making contact and grasping, yet complete the full task only 0–5.5% of the time.</p>
+<p data-l="zh">Robocurve 用开源的 Inspect Robots Harness 做了一组第三方真机对比 [21, 22]：模型控制两台 YAM 机械臂，每一轮接收三路相机图像、记录自己的笔记并给出末端目标，每次试验由人工按 0–4 级打分。在“把红色方块放进碗里”的任务上，Claude Fable 5 在 20 次中成功 1 次，Fable 5.1 成功 8 次，GPT-6 Astra 成功 19 次，后者每次约用 2.5 分钟、成本约 0.94 美元；而在“把拼图块插进对应凹槽”的任务上，三个模型都停在最后的插入步骤，最好的结果也只是 20 次中成功 2 次。媒体报道中“Fable 5.1 抓放成功率从 5% 提升到 40%”的数字就来自这项评测，而不是 Anthropic 的发布。</p>
+<p data-l="en">Robocurve ran a set of third-party real-robot comparisons with the open Inspect Robots harness [21, 22]. The model controls two YAM arms; each turn it receives three camera views, keeps its own notes and outputs end-effector targets, and a human grades every trial on a 0–4 scale. On placing a red block in a bowl, Claude Fable 5 succeeded in 1 of 20 trials, Fable 5.1 in 8 and GPT-6 Astra in 19, the last at about 2.5 minutes and $0.94 per run. On inserting a puzzle piece into its groove, all three models stalled at the final insertion, with at best 2 successes in 20. The “Fable 5.1 raised pick-and-place success from 5% to 40%” figure in press coverage comes from this evaluation, not from Anthropic.</p>
+<p data-l="zh">Astranomy [29] 在仿真的 DROID 机器人（RoboLab-120）上评测 GPT-6 Astra，直接输出末端动作的成功率为 66.3%，平均每次调用约 18.6 秒。Claude Fable 5.2 的发布报告 [32] 称，模型在 RoboDojo 仿真双臂基准上取得 64.9%，高于 Opus 5.5（39.4%）、Gemini 4 Argon（34.2%）和 GPT-6 Astra（29.8%），这些分数均由 Anthropic 在同一 Harness 上内部测得。报告还展示了真机解魔方、拧瓶盖和画画的演示，但没有说明所用硬件和控制方式，因此无法判断这些演示属于 Direct Control，还是借助了程序或预训练策略。</p>
+<p data-l="en">Astranomy [29] evaluated GPT-6 Astra on a simulated DROID robot (RoboLab-120): emitting end-effector actions directly succeeded 66.3% of the time, at about 18.6 s per call. The Claude Fable 5.2 launch report [32] states that the model reaches 64.9% on the RoboDojo simulated two-arm benchmark, above Opus 5.5 (39.4%), Gemini 4 Argon (34.2%) and GPT-6 Astra (29.8%), all run internally by Anthropic on the same harness. The report also shows real-robot demonstrations of solving a puzzle cube, unscrewing a bottle cap and drawing, but does not describe the hardware or control method, so it is unclear whether the demonstrations used direct control or relied on programs or pretrained policies.</p>
+<figure class="fig">
+<div class="tile">
+<div class="fig-grid c2" data-media="cpr rc51 rcastra astra_fail"></div>
+</div>
+<figcaption class="fig-cap"><b><span data-l="zh">图 7</span><span data-l="en">Figure 7</span></b><span data-l="zh">Direct Control 及相关对比。(a) 来自 [17] 的程序控制设置，作为对照；(b)(c) 为 Robocurve 的真机录像，计时已去掉模型思考的停顿。</span><span data-l="en">Direct control and related comparisons. (a) shows the programmatic setting from [17] as a contrast; (b) and (c) are Robocurve's real-robot recordings, with the model's thinking pauses removed from the timers.</span></figcaption>
+</figure>
+</div>
+</section>
+<section class="sec" id="s-arch">
+<div class="wrap with-toc prose">
+<h2 class="sh"><span class="no">7</span><span data-l="zh">System 2 足够强时，System 1 和 System 0 会怎样</span><span data-l="en">What happens to System 1 and System 0 when System 2 is strong enough</span></h2>
+<p data-l="zh">第 3–6 节按接口归类了现有工作。也可以按功能把控制栈分成三层：System 2 负责理解与规划；System 1 生成动作目标或参考轨迹；System 0 是 Low-Level Controller，利用机器人状态反馈，将上层目标转换成位置、速度或力矩等执行器指令。它可以采用机械臂／夹爪的伺服或阻抗控制、四足步态控制、人形全身运动跟踪等实现；既可以基于模型设计，也可以通过学习获得，并可按任务需要使用力觉或视觉反馈。</p>
+<p data-l="en">Sections 3–6 classified existing work by interface. A functional view separates three roles: System 2 handles understanding and planning; System 1 generates action targets or reference trajectories; System 0 is a low-level controller that uses robot-state feedback to convert those targets into actuator commands such as position, velocity or torque. Implementations include arm / gripper servo or impedance control, quadruped gait control and humanoid whole-body tracking. Controllers may be model-based or learned, with force or visual feedback where the task requires it.</p>
+<p data-l="zh">图 8 以人形机器人为例：VLM 接收语言和 Ego-Vision，Action Head 通过 Cross-Attention 读取其特征，并输出 Future Kinematics；低层控制器再执行这些参考。Figure 的 Helix 02 [8] 和 SONIC 这类 General Motion Tracker [13] 提供了具体案例。Whole-Body Tracking 是 System 0 的一种实现，不是这一层的通用名称；三层命名也不意味着所有机器人都采用相同的模型或接口。</p>
+<p data-l="en">Figure 8 illustrates a humanoid stack: a VLM takes language and egocentric vision, an action head reads its features through cross-attention and outputs future kinematics, and a low-level controller executes those references. Figure's Helix 02 [8] and general motion trackers such as SONIC [13] provide concrete examples. Whole-body tracking is one implementation of System 0, rather than the general name of that layer; the three-layer terminology does not imply identical models or interfaces across robots.</p>
+<figure class="fig" id="fig8">
+<div class="tile">
+<div class="s3">
+<div class="s3-col"><div class="s3-h">System 2</div><div class="s3-in"><span data-l="zh">语言 · Ego-Vision</span><span data-l="en">language · ego-vision</span></div><div class="s3-box">VLM</div><div class="s3-q"><span data-l="zh">有了 Astra 这样的前沿模型，还需要 System 1 吗？</span><span data-l="en">Do we still need System 1 now that we have Astra?</span></div></div>
+<div class="s3-link"><b class="h">→</b><b class="v">↓</b><span data-l="zh">Cross-Attention</span><span data-l="en">cross-attention</span></div>
+<div class="s3-col"><div class="s3-h">System 1</div><div class="s3-in"><span data-l="zh">Ego-Vision · Proprioception</span><span data-l="en">ego-vision · proprioception</span></div><div class="s3-box"><span data-l="zh">Action Head</span><span data-l="en">Action head</span></div><div class="s3-q"><span data-l="zh">扩大 System 1 的数据合成规模</span><span data-l="en">Scale up data synthesis for System 1</span></div><div class="s3-q"><span data-l="zh">System 1 需要在推理时适配 System 0</span><span data-l="en">System 1 needs to adapt to System 0 at inference time</span></div></div>
+<div class="s3-link"><b class="h">→</b><b class="v">↓</b><span data-l="zh">Future Kinematics</span><span data-l="en">future kinematics</span></div>
+<div class="s3-col"><div class="s3-h">System 0</div><div class="s3-in"><span data-l="zh">Proprioception</span><span data-l="en">proprioception</span></div><div class="s3-box">Low-Level Controller</div><div class="s3-out">→ <span data-l="zh">执行器指令</span><span data-l="en">actuator commands</span></div><div class="s3-q"><span data-l="zh">感知型 System 0，而不是盲跟踪</span><span data-l="en">A perceptive System 0 instead of blind tracking</span></div><div class="s3-q"><span data-l="zh">单体 Whole-Body Tracker 的表现和扩展性不如一组 System 0 专家</span><span data-l="en">A monolithic whole-body tracker performs and scales worse than an ensemble of System 0 experts</span></div></div>
+</div>
+<div class="s3-foot"><div class="k"><span data-l="zh">System 1 → System 0 的接口（Future Kinematics）</span><span data-l="en">The System 1 → System 0 interface (future kinematics)</span></div><div class="s3-q"><span data-l="zh">通用 Whole-Body Tracker 也要能控制动力学</span><span data-l="en">A general whole-body tracker must control dynamics as well</span></div><div class="s3-q"><span data-l="zh">显式通信会妨碍技能组合</span><span data-l="en">Explicit communication hinders skill composability</span></div></div>
+</div>
+<figcaption class="fig-cap"><b><span data-l="zh">图 8</span><span data-l="en">Figure 8</span></b><span data-l="zh">以人形运动跟踪为例的 System 2/1/0 架构，根据 TML 组会讨论中的示意图改绘；System 0 标题采用更通用的 Low-Level Controller。带边框的文字是当时提出的开放问题。</span><span data-l="en">A humanoid motion-tracking example of System 2/1/0, adapted from a TML lab-meeting diagram with the general label Low-Level Controller for System 0. Boxed text marks the open questions raised there.</span></figcaption>
+</figure>
+<p data-l="zh">斯坦福 TML 的 HomeBody [25] 在 GPT-6 Astra 发布后不久提出了一个直接的问题：System 2 能否直接编排一个可复用的运动 Skill Library，而不需要中间那个学出来的 VLA？它用 Astra 作为可替换的高层模型。机器人先自主探索一间陌生的厨房，再由 Astra 担任 Real2Sim Agent，在 Isaac Sim 中重建 Digital Twin，作为持久的空间记忆；之后 Astra 从一个共享接口的 Skill Library（导航、抓取、放置、开抽屉、从抽屉取物）中选择技能和目标。这些技能用经典方法实现，包括基于分割几何的抓取预测、Minimum-Jerk Spline、IK 和碰撞检查；底层由预训练的 AMO Whole-Body Controller 保持平衡，手臂和手的指令以 250 Hz 运行，AMO 策略以 50 Hz 更新。技能失败时，结果会返回给 Astra，由它重新定位或重新规划。系统在 Unitree G1 上完成了“整理厨房”和“取药”两个长时程任务（图 9）。</p>
+<p data-l="en">HomeBody [25], from Stanford's TML and released shortly after GPT-6 Astra, asks a direct question: can System 2 orchestrate a library of reusable motor skills without a learned VLA in between? It uses Astra as a swappable high-level model. The robot first explores an unseen kitchen; Astra then acts as a Real2Sim agent and rebuilds a digital twin in Isaac Sim that serves as persistent spatial memory; afterwards Astra chooses skills and targets from a library with a shared interface (navigate, pick, place, open drawer, pick from drawer). The skills are implemented classically, with grasp prediction from segmented geometry, minimum-jerk splines, inverse kinematics and collision checks, while a pretrained AMO whole-body controller keeps balance: arm and hand commands run at 250 Hz and the AMO policy updates at 50 Hz. When a skill fails, the result goes back to Astra, which repositions or replans. On a Unitree G1 the system completed two long-horizon tasks, tidying a kitchen and retrieving medicine (Figure 9).</p>
+<figure class="fig">
+<div class="tile">
+<div class="fig-grid c2" data-media="hb_cmp hb_pick hb_drawer hb_retry"></div>
+</div>
+<figcaption class="fig-cap"><b><span data-l="zh">图 9</span><span data-l="en">Figure 9</span></b><span data-l="zh">HomeBody [25]。(a) 论文中的结构对比；(b)–(d) 真机上的抓取、开抽屉和从抽屉取药时的重试，视频均为加速版本。</span><span data-l="en">HomeBody [25]. (a) The paper’s architecture comparison; (b)–(d) pick, open-drawer and retrying a pick from a drawer on the real robot, all sped up.</span></figcaption>
+</figure>
+<p data-l="zh">HomeBody 证明的是：对于可以分解为离散、准静态技能的长时程任务，学出来的 System 1 可以被“System 2 加 Skill Library”替代。但它没有取消 System 1 的功能，即把语义决策转换成可执行的运动目标，只是把这一功能从一个端到端模型变成了一组显式的程序；System 0 也没有消失，反而承担了全部的平衡与动态协调。论文自己列出的局限也标出了边界：Astra 的推理延迟让技能之间出现停顿；技能演示视频大多被加速压缩到 7–10 秒，从抽屉取物的重试片段以 14 倍速播放；抓取和开抽屉都有重试；页面没有给出成功率。</p>
+<p data-l="en">What HomeBody shows is that, for long-horizon tasks that decompose into discrete, quasi-static skills, a learned System 1 can be replaced by System 2 plus a skill library. It does not remove System 1's function, turning semantic decisions into executable motion targets; it moves that function from an end-to-end model into explicit programs. Nor does System 0 disappear; it carries all of the balance and dynamic coordination. The limitations the authors list mark the boundary: Astra's reasoning latency causes pauses between skills, most skill videos are sped up to fit about 7–10 seconds (the drawer-pick retries play at 14× speed), grasps and drawer opening needed retries, and no success rates are reported.</p>
+<p data-l="zh">据此，System 2 变强之后，System 1 可能有三种去向。第一，对于几何上可以描述清楚的准静态技能，它被 Skill Library 和经典规划取代（HomeBody 的路线），而这个 Skill Library 本身可以由 Coding Agent 编写和维护（Waddle [23]、Project Fetch [16]）。第二，对于接触密集、需要视觉闭环的技能（插接、Deformable Object、动态操作），学出来的策略仍然不可替代，但会从一个包揽一切的通用 VLA 变成一组可调用的专门技能，由 System 2 负责组合，Gemini Robotics 的 ER 模型编排 VLA [11, 19] 和 Waddle 都是这种结构。第三，System 2 不再在线控制 System 1，而是为它合成训练数据：Zero-HLM [31] 用 Agent 重建的场景生成了 4,800 条经物理验证的示范，只用这些仿真数据训练的 GR00T N1.7 在三个 Unitree G1 任务上的完整成功率为 66.7%，高于用真实数据训练的 46.7%。这对应图 8 中“扩大 System 1 的数据合成规模”这一问题。</p>
+<p data-l="en">This suggests three possible fates for System 1 as System 2 gets stronger. First, for quasi-static skills that can be described geometrically, it gives way to a skill library and classical planning (HomeBody's route), and that library can itself be written and maintained by coding agents (Waddle [23], Project Fetch [16]). Second, for contact-rich skills that need visual closed loops (insertion, deformable objects, dynamic manipulation), learned policies remain irreplaceable, but they shift from one all-purpose VLA to a set of callable specialist skills composed by System 2, as in Gemini Robotics' ER model orchestrating its VLA [11, 19] and in Waddle. Third, System 2 stops controlling System 1 online and instead synthesizes its training data: Zero-HLM [31] generated 4,800 physically validated demonstrations from agent-reconstructed scenes, and a GR00T N1.7 policy trained only on that simulation data reached 66.7% full-task success on three Unitree G1 tasks, above the 46.7% of a policy trained on real data. This corresponds to the question of scaling up data synthesis for System 1 in Figure 8.</p>
+<p data-l="zh">System 1 与 System 0 之间的接口同样关键。图 8 中有两个问题指向它：一是 System 1 需要在推理时适配具体的 System 0，否则它给出的运动学目标可能超出跟踪器的能力；二是用显式的运动学轨迹通信会妨碍技能组合，例如边走边搬、推门的同时迈步时，不同技能给出的目标会相互冲突。可能的方向包括让 System 1 输出 System 0 能直接理解的隐式表示，例如 SONIC 的 Universal Motion Token [13]，或在训练中让两层相互适应，例如 Zero-HLM 用仿真回放的反馈修正 Whole-Body Reference [31]。</p>
+<p data-l="en">The interface between System 1 and System 0 matters just as much. Two questions in Figure 8 point to it. First, System 1 must adapt to the specific System 0 at inference time; otherwise its kinematic targets may exceed what the tracker can follow. Second, communicating through explicit kinematic trajectories hinders skill composition: when walking while carrying, or stepping while pushing a door, targets from different skills conflict. Possible directions include having System 1 output an implicit representation that System 0 understands directly, such as SONIC's universal motion tokens [13], or making the two layers adapt to each other during training, as Zero-HLM does by correcting whole-body references from simulated rollouts [31].</p>
+<p data-l="zh">System 0 在这种演化中变得更重要，而不是更不重要：System 2 的能力到不了毫秒级的物理交互，上面各层最终都依赖它的稳健性。图 8 对 System 0 提出了三点要求。其一，要有感知，而不是盲跟踪：PHP [15] 用深度相机让人形机器人根据障碍调整跑酷动作，攀爬墙面或梯子等接触密集的任务同样需要看到接触面。其二，要能控制动力学，而不只是复现运动学：推、拉、搬运和攀爬都与环境交换力，纯运动学跟踪无法表达。其三，一组专家可能比单个模型更好：PHP 先为每种技能训练 Motion Tracking Expert，再蒸馏成一个学生策略；图 8 更进一步，认为单体 Whole-Body Tracker 的表现和扩展性不如一组 System 0 专家。换句话说，System 0 也在走向“Skill Library”，只是它的技能是学出来的，而不是写出来的。</p>
+<p data-l="en">System 0 becomes more important in this evolution, not less: System 2's abilities do not reach millisecond-scale physical interaction, so every layer above ultimately depends on System 0's robustness. Figure 8 places three demands on it. It should perceive rather than track blindly: PHP [15] uses a depth camera so a humanoid adapts its parkour motions to obstacles, and contact-rich tasks such as climbing walls or ladders likewise need to see contact surfaces. It should control dynamics, not just reproduce kinematics: pushing, pulling, carrying and climbing all exchange forces with the environment, which pure kinematic tracking cannot express. And a set of experts may beat a single model: PHP trains a motion-tracking expert per skill and distills them into one student policy, and Figure 8 goes further, holding that a monolithic whole-body tracker performs and scales worse than an ensemble of System 0 experts. In other words, System 0 is also turning into a skill library, only its skills are learned rather than written.</p>
+<p data-l="zh">综合来看，System 2 变强之后，三层结构不会坍缩成一层，而是重新分工：System 2 接管任务分解、记忆和工程工作；System 1 碎片化为由程序和学习策略组成的 Skill Library，其训练数据越来越多地由 System 2 合成；System 0 需要变得更通用、能感知、能处理动力学。研究重点随之转向层间接口：System 2 交给下层的是什么（技能调用、目标、隐式 token 还是代码），下层又如何把执行结果和失败信号报告回来。</p>
+<p data-l="en">Taken together, a stronger System 2 does not collapse the stack into one layer; it redistributes the work. System 2 takes over task decomposition, memory and engineering. System 1 fragments into a library of programs and learned policies whose training data is increasingly synthesized by System 2. System 0 must become more general, perceptive and dynamics-aware. The research focus shifts to the interfaces between layers: what System 2 hands down (skill calls, targets, implicit tokens or code) and how the lower layers report execution results and failures back up.</p>
+</div>
+</section>
+<section class="sec" id="s-lat">
+<div class="wrap with-toc prose">
+<h2 class="sh"><span class="no">8</span><span data-l="zh">System 2 越来越强，Direct Control 仍然太慢：一个辩证的分析</span><span data-l="en">A stronger System 2 that is still too slow for direct control: a dialectical analysis</span></h2>
+<p data-l="zh"><strong>正题：System 2 的控制能力在快速提升。</strong>在同一套 Inspect Robots 框架下，放方块入碗的成功次数从 Fable 5 的 1/20、Fable 5.1 的 8/20 升到 GPT-6 Astra 的 19/20，前后只隔几个月 [21, 22]；Fable 5.2 在 RoboDojo 仿真上的成绩是 Fable 5.1 的两倍多 [32]；[17] 也观察到，较新的模型在低层控制上有可测的进步。照这个趋势，一个自然的推论是：只要模型再快一些，System 2 就可以直接控制机器人，下面两层可以逐渐取消。</p>
+<p data-l="en"><strong>Thesis: System 2's control ability is improving fast.</strong> On the same Inspect Robots harness, successes on the block-into-bowl task rose from 1/20 for Fable 5 and 8/20 for Fable 5.1 to 19/20 for GPT-6 Astra within a few months [21, 22]; Fable 5.2 more than doubled Fable 5.1's score on RoboDojo Sim [32]; and [17] also observes measurable gains in low-level control in newer models. The natural extrapolation is that once models get a little faster, System 2 could control robots directly and the two lower layers could gradually be dropped.</p>
+<p data-l="zh"><strong>反题：延迟是结构性的，不只是工程问题。</strong>第一，时间尺度的差距太大（表 2）：前沿模型每次决策需要数秒到数十秒（Astranomy 直接模式约 18.6 秒 [29]），而 HomeBody 的手臂指令以 250 Hz 运行、Whole-Body Controller 以 50 Hz 更新 [25]，Helix 的 System 1 以 200 Hz 输出动作 [8]；即使推理再快一百倍，也仍比接触与平衡所需的反馈慢一到两个数量级。第二，能力与延迟同向增长：推理越充分，消耗的 token 越多，Astranomy 中效果最好的 agent 模式每回合要 3,090 万 token [29]，HomeBody 也报告了技能之间的停顿 [25]。第三，从控制理论看，回路延迟限制了可达到的带宽和稳定裕度，再好的决策也无法纠正比自身决策周期更快的扰动；Project Fetch 推球失败、Robocurve 插槽任务卡在最后一步 [16, 22]，都发生在需要快速反馈修正的环节。第四，云端推理还带来网络、成本和可靠性问题。</p>
+<p data-l="en"><strong>Antithesis: the latency is structural, not just an engineering problem.</strong> First, the gap in timescales is too large (Table 2): a frontier model needs seconds to tens of seconds per decision (about 18.6 s in Astranomy's direct mode [29]), while HomeBody's arm commands run at 250 Hz and its whole-body controller updates at 50 Hz [25], and Helix's System 1 acts at 200 Hz [8]. Even a hundredfold speedup would leave the model one to two orders of magnitude slower than the feedback that contact and balance require. Second, capability and latency grow together: more thorough reasoning consumes more tokens; Astranomy's best-performing agent mode used 30.9 million tokens per episode [29], and HomeBody reports pauses between skills [25]. Third, in control-theoretic terms, loop delay limits the achievable bandwidth and stability margin: no decision, however good, can correct disturbances faster than its own cycle. Project Fetch's ball nudging and Robocurve's final insertion both failed exactly where fast corrective feedback was needed [16, 22]. Fourth, cloud inference adds network, cost and reliability problems.</p>
+<div class="tbl-block">
+<p class="tbl-cap"><b><span data-l="zh">表 2</span><span data-l="en">Table 2</span></b><span data-l="zh">各层的典型运行频率或单次延迟，取自各原始报告。</span><span data-l="en">Typical rate or per-call latency of each layer, taken from the original reports.</span></p>
+<div class="tile tbl-tile"><div class="tbl"><table>
+<thead><tr><th><span data-l="zh">模块</span><span data-l="en">Module</span></th><th><span data-l="zh">频率或单次延迟</span><span data-l="en">Rate or latency</span></th><th><span data-l="zh">来源</span><span data-l="en">Source</span></th></tr></thead>
+<tbody>
+<tr><td><span data-l="zh">前沿模型 Direct Control（GPT-6 Astra，直接模式）</span><span data-l="en">Frontier model, direct control (GPT-6 Astra, direct mode)</span></td><td class="w"><span data-l="zh">约 18.6 秒/次调用</span><span data-l="en">about 18.6 s per call</span></td><td>[29]</td></tr>
+<tr><td><span data-l="zh">前沿模型完成一次放方块试验（GPT-6 Astra）</span><span data-l="en">Frontier model, one block-into-bowl trial (GPT-6 Astra)</span></td><td class="w"><span data-l="zh">约 2.5 分钟/次</span><span data-l="en">about 2.5 min per trial</span></td><td>[22]</td></tr>
+<tr><td><span data-l="zh">机载 System 2（Helix，7B VLM）</span><span data-l="en">Onboard System 2 (Helix, 7B VLM)</span></td><td class="w"><span data-l="zh">7–9 Hz</span><span data-l="en">7–9 Hz</span></td><td>[8]</td></tr>
+<tr><td><span data-l="zh">System 1（Helix，80M Visuomotor Policy）</span><span data-l="en">System 1 (Helix, 80M visuomotor policy)</span></td><td class="w"><span data-l="zh">200 Hz</span><span data-l="en">200 Hz</span></td><td>[8]</td></tr>
+<tr><td><span data-l="zh">System 0（HomeBody 中的 AMO Whole-Body Controller）</span><span data-l="en">System 0 (the AMO whole-body controller in HomeBody)</span></td><td class="w"><span data-l="zh">50 Hz</span><span data-l="en">50 Hz</span></td><td>[25]</td></tr>
+<tr><td><span data-l="zh">手臂与手的指令（HomeBody）</span><span data-l="en">Arm and hand commands (HomeBody)</span></td><td class="w"><span data-l="zh">250 Hz</span><span data-l="en">250 Hz</span></td><td>[25]</td></tr>
+</tbody>
+</table></div></div>
+</div>
+<p data-l="zh"><strong>合题：不让 System 2 进入快回路，而是改变它输出什么、何时输出。</strong>解决这一矛盾的方向不是把 System 2 做得快到能直接控制，而是让它往两个方向移动：向上，输出有效期更长的东西（目标、技能调用、约束、程序）；向外，离开在线控制回路，进入开发回路，为下层构建环境、数据和策略。具体可以分为六条路线。</p>
+<p data-l="en"><strong>Synthesis: keep System 2 out of the fast loop and change what it outputs and when.</strong> The contradiction is resolved not by making System 2 fast enough to control, but by moving it in two directions: up, toward outputs that stay valid longer (goals, skill calls, constraints, programs); and out of the online control loop into the development loop, where it builds environments, data and policies for the layers below. Six concrete routes follow.</p>
+<ol class="routes">
+<li><strong><span data-l="zh">分时标分层</span><span data-l="en">Timescale separation</span></strong><span data-l="zh">System 2 只做慢决策，下层负责快反应；关键是让 System 2 的每一次输出都能管得足够久。Helix 的 7–9 Hz System 2 指挥 200 Hz 的 System 1 [8]，Gemini Robotics 的 ER 模型逐步给 VLA 下指令 [11, 19]。</span><span data-l="en">System 2 makes only slow decisions and the lower layers react fast; the key is that each System 2 output stays useful long enough. Helix's 7–9 Hz System 2 directs a 200 Hz System 1 [8], and Gemini Robotics' ER model instructs its VLA step by step [11, 19].</span></li>
+<li><strong><span data-l="zh">写控制器，而不是当控制器</span><span data-l="en">Write the controller instead of being it</span></strong><span data-l="zh">一次推理生成一段可以高频运行的程序，把延迟摊到成千上万个控制步上。Code as Policies [4]、Project Fetch [16] 和 Waddle [23] 都属于这一思路，[17] 中模型还可以自己用 RL 训练控制器。局限是写死的程序难以应对未建模的接触动力学。</span><span data-l="en">One inference produces a program that runs at high rate, amortizing the latency over thousands of control steps. Code as Policies [4], Project Fetch [16] and Waddle [23] follow this idea, and in [17] the model can even train its own controller with RL. The limit is that fixed programs struggle with unmodeled contact dynamics.</span></li>
+<li><strong><span data-l="zh">进入开发回路</span><span data-l="en">Move into the development loop</span></strong><span data-l="zh">让 System 2 在仿真中为下层构建环境、生成数据、训练和修复策略，把延迟从控制时间（毫秒）挪到开发时间（小时）。RoboSimStudio 约一小时从手机视频搭出含 Deformable Object 的仿真 [28]，Zero-HLM 用重建场景训练的策略超过了真实数据训练的策略 [31]，F4R 把真实失败重建成仿真环境来改进 VLA [26]。第 9 节详细讨论。</span><span data-l="en">System 2 builds environments, generates data and trains or repairs policies in simulation for the lower layers, moving the latency from control time (milliseconds) to development time (hours). RoboSimStudio builds a simulation with deformables from a phone video in about an hour [28], Zero-HLM's policy trained in reconstructed scenes beats one trained on real data [31], and F4R rebuilds real failures as simulation environments to improve a VLA [26]. Section 9 covers this in detail.</span></li>
+<li><strong><span data-l="zh">异步与事件触发</span><span data-l="en">Asynchronous, event-triggered calls</span></strong><span data-l="zh">下层持续执行，System 2 在后台思考，只在子任务完成、失败或不确定性升高时介入。HomeBody 把每次技能执行的结果返回给 Astra [25]；PI 的实时分块（RTC）在执行当前 Action Chunk 的同时生成下一块 [10]，是同一思想在 System 1 层面的实现。</span><span data-l="en">The lower layers keep executing while System 2 thinks in the background, stepping in only when a subtask finishes, fails or uncertainty rises. HomeBody returns each skill's result to Astra [25]; PI's real-time chunking (RTC) generates the next action chunk while the current one executes [10], the same idea applied at the System 1 level.</span></li>
+<li><strong><span data-l="zh">蒸馏与端侧化</span><span data-l="en">Distillation and on-device models</span></strong><span data-l="zh">把 System 2 的决策蒸馏到更小、更快、能在机器人上运行的模型。Helix 的 7B System 2 完全在机载 GPU 上运行 [8]，Gemini Robotics 2 发布了本地运行的 On-Device 模型 [19]；Robocurve 的对比也显示，新模型完成同一任务所用的 token 和时间都在下降（GPT-6 Astra 每次约 2.1k 输出 token、2.5 分钟，Fable 5.1 约 12.9k、6.8 分钟）[22]。</span><span data-l="en">Distill System 2's decisions into smaller, faster models that run on the robot. Helix's 7B System 2 runs entirely on onboard GPUs [8], and Gemini Robotics 2 ships an On-Device model that runs locally [19]; Robocurve's comparisons also show newer models using fewer tokens and less time per task (GPT-6 Astra about 2.1k output tokens and 2.5 minutes per run, Fable 5.1 about 12.9k and 6.8 minutes) [22].</span></li>
+<li><strong><span data-l="zh">更好的层间接口</span><span data-l="en">Better interfaces between layers</span></strong><span data-l="zh">让 System 2 的慢输出携带足够的结构，使下层能长时间自主执行：例如隐式动作 token（SONIC [13]）、代价或目标函数、约束条件，而不是逐步的语言指令或显式运动学轨迹（对应图 8 中“显式通信会妨碍技能组合”的问题）。</span><span data-l="en">Give System 2's slow outputs enough structure for the lower layers to act autonomously for longer: implicit motion tokens (SONIC [13]), cost or goal functions, or constraints, rather than step-by-step language or explicit kinematic trajectories (the composability problem flagged in Figure 8).</span></li>
+</ol>
+<p data-l="zh">这几条路线的共同点是：System 2 的价值越来越多地体现在构建和组织下层，而不是亲自执行。反过来也要看到两点限制。第一，开发回路本身也有时间成本：RoboSimStudio 搭建一个场景约需一小时 [28]，对于需要在几分钟内适应新情况的部署仍然太慢。第二，越依赖下层，系统的能力上限就越受下层覆盖范围的限制，这又回到了第 2 节的取舍。这个平衡点会随着推理速度和 Coding Agent 能力的提升而移动，但短期内不会消失。</p>
+<p data-l="en">What these routes share is that System 2's value lies increasingly in building and organizing the lower layers rather than executing itself. Two limits remain. First, the development loop costs time too: RoboSimStudio needs about an hour per scene [28], still too slow for deployments that must adapt within minutes. Second, the more a system relies on its lower layers, the more its ceiling is bounded by what those layers cover, which brings back the trade-off of Section 2. The balance point will move as inference gets faster and coding agents get better, but it will not disappear soon.</p>
+</div>
+</section>
+<section class="sec" id="s-r2s">
+<div class="wrap with-toc prose">
+<h2 class="sh"><span class="no">9</span><span data-l="zh">Agent 作为机器人工程师：Agentic Real2Sim</span><span data-l="en">Agents as robotics engineers: Agentic Real2Sim</span></h2>
+<p data-l="zh">第 4 节和第 8 节都指向同一个趋势：Coding Agent 已经能完成机器人工程师工作流中相当大的一部分。Project Fetch 第二期中，Claude Opus 4.7 用 9 分 35 秒完成了人类组 361 分钟的工作 [16]；Waddle 在约 20 分钟内写出可用的操作策略 [23]。在这些工作中，杠杆最大的一环是从真实世界构建仿真（Real2Sim）：过去需要人工建模资产、标定相机、调整物理参数，现在可以交给 Agent。Yanjie Ze 维护的论文列表 [33] 中，仅 2026 年 7 月到 11 月初就收录了 39 篇“Agent × Real2Sim2Real”的工作。</p>
+<p data-l="en">Sections 4 and 8 point to the same trend: coding agents can already do a large part of a robotics engineer's workflow. In phase two of Project Fetch, Claude Opus 4.7 did in 9 min 35 s what took a human team 361 minutes [16], and Waddle writes a working manipulation policy in about 20 minutes [23]. The step with the most leverage is building simulations from the real world (Real2Sim), which used to require hand-modeling assets, calibrating cameras and tuning physical parameters and can now be delegated to agents. Yanjie Ze's curated list [33] already counts 39 “agent × Real2Sim2Real” papers between July and early November 2026 alone.</p>
+<p data-l="zh"><strong>从视频重建多物理场景，包括 Deformable Object。</strong>RoboSimStudio [28] 由 UC Berkeley AUTOLab 与 NVIDIA 的 Newton 团队合作完成。输入是一段手机拍摄的机器人操作视频和一句提示，Claude Code 或 Codex 在约一小时内搭出场景、相机和物理，得到一个多物理仿真：刚体在 Newton 中模拟，海绵等 Deformable Object 用 SuperDex 的有限元求解器模拟，两者耦合；人和 Agent 再对照视频调整参数。作者用它构建了 18 个接触密集的操作仿真，涵盖刚体、铰接机构、线缆、布料和软体；在仿真中随机化参数和布局改进策略后，部署到真机完成擦吧台、撕膜和走线缆等任务（图 10）。Agentic Real2Sim [20] 用 VLM Agent 把一段真实的物体–机器人交互录像转成可仿真的“Episodic Twin”，覆盖刚体操作、Deformable Object 和人形运动三类场景，并称以开源 VLM 作为决策后端时，可以用远低于前沿模型的成本达到相近的转换成功率。</p>
+<p data-l="en"><strong>Multi-physics scenes from video, including deformables.</strong> RoboSimStudio [28] comes from UC Berkeley's AUTOLab and NVIDIA's Newton team. Given a phone video of a robot task and a one-line prompt, Claude Code or Codex builds the scene, camera and physics in about an hour, producing a multi-physics simulation in which rigid bodies run in Newton and deformables such as a sponge run in SuperDex's finite-element solver, coupled together; humans and agents then tune the parameters against the video. The authors built 18 contact-rich manipulation simulations covering rigid bodies, articulated mechanisms, cables, cloth and soft bodies, improved policies in simulation with randomized parameters and layouts, and deployed them on a real robot for tasks such as wiping a bar, peeling film and routing a cable (Figure 10). Agentic Real2Sim [20] uses vision-language agents to turn a real recording of object–robot interaction into a simulatable episodic twin, covering rigid manipulation, deformable objects and humanoid motion, and reports that an open-weight VLM as the decision backend reaches comparable conversion success at a small fraction of a frontier model's cost.</p>
+<figure class="fig">
+<div class="tile">
+<div class="fig-grid c2" data-media="rss_teaser rss_gallery rss_deploy hb_recon"></div>
+</div>
+<figcaption class="fig-cap"><b><span data-l="zh">图 10</span><span data-l="en">Figure 10</span></b><span data-l="zh">Agentic Real2Sim。(a)–(c) 来自 RoboSimStudio [28]；(d) 为 HomeBody 中由 Astra 构建的厨房 Digital Twin [25]。</span><span data-l="en">Agentic Real2Sim. (a)–(c) are from RoboSimStudio [28]; (d) is the kitchen twin built by Astra in HomeBody [25].</span></figcaption>
+</figure>
+<p data-l="zh"><strong>从机器人演示数据构建可交互世界。</strong>WorldMirror [30] 把 Real2Sim 视为对一个可执行“World Program”的迭代修改：Coding Agent 规划重建步骤，调用图像和 3D 生成工具，并根据验证反馈纠错；它在 DROID 数据上重建的世界既保留了视觉外观，也保持了演示轨迹的物理有效性。</p>
+<p data-l="en"><strong>Interactive worlds from robot demonstrations.</strong> WorldMirror [30] treats Real2Sim as iterative refinement of an executable world program: a coding agent plans reconstruction steps, calls image and 3D generation tools and corrects errors from verification feedback; on DROID it rebuilds worlds that keep both the visual appearance and the physical validity of the recorded trajectories.</p>
+<p data-l="zh"><strong>为下层合成数据和策略。</strong>Zero-HLM [31] 从手机拍摄重建场景，并用仿真回放的反馈修正 Whole-Body Reference，生成 4,800 条经物理验证的示范，训练出的人形策略 Zero-Shot 迁移到真机（见第 7 节）。Agentic RSR [27] 先由 Agent 在 MuJoCo 中重建工作台并检查交互，再由 Coding Agent 在仿真中开发策略，真机的总体成功率达到仿真成功率的 80%。F4R [26] 让 Agent 从真实部署中识别失败，把每次失败重建成交互式仿真环境，通过 Sim–Real Co-training 和定向 RL 改进 VLA，在四个真实任务上达到 93.75%（分布内）和 90.0%（分布外）的成功率。</p>
+<p data-l="en"><strong>Data and policies for the lower layers.</strong> Zero-HLM [31] reconstructs scenes from phone captures and corrects whole-body references from simulated rollouts, generating 4,800 physically validated demonstrations whose trained humanoid policy transfers zero-shot to the real robot (Section 7). In Agentic RSR [27], an agent first rebuilds the workspace in MuJoCo and checks interactions, then a coding agent develops the policy in simulation; real-robot success reaches 80% of simulated success. F4R [26] has an agent identify failures in real deployment, rebuild each as an interactive simulation environment and improve a VLA through failure-conditioned sim–real co-training and targeted RL, reaching 93.75% in-distribution and 90.0% out-of-distribution success on four real tasks.</p>
+<p data-l="zh"><strong>为 System 2 提供空间记忆。</strong>HomeBody [25] 用 Astra 作为 Real2Sim Agent，从人形机器人自己采集的探索数据在 Isaac Sim 中构建厨房的 Digital Twin，让高层模型可以推理视野之外的位置。</p>
+<p data-l="en"><strong>Spatial memory for System 2.</strong> HomeBody [25] uses Astra as a Real2Sim agent to build a digital twin of the kitchen in Isaac Sim from the humanoid's own exploration data, so the high-level model can reason about places outside its view.</p>
+<p data-l="zh">放回三层架构中看，Agentic Real2Sim 把 System 2 最擅长的能力（编程、推理、使用工具）转化成了 System 1 和 System 0 最需要的东西（训练环境、数据和可验证的策略），而且发生在开发时间而不是控制时间，正好绕开了第 8 节讨论的延迟问题。</p>
+<p data-l="en">Seen through the three-layer architecture, Agentic Real2Sim converts what System 2 does best (programming, reasoning, tool use) into what System 1 and System 0 need most (training environments, data and verifiable policies), and it does so in development time rather than control time, sidestepping the latency problem of Section 8.</p>
+<p data-l="zh">这一路线的瓶颈在验证。Agent 可以很快搭出一个“看起来对”的场景，但接触、摩擦和 Deformable Object 的物理是否可信，需要以测量为依据的反馈（RoboSimStudio 同时使用视觉对比和力反馈来校准）；目前大多数 Sim–Real 一致性的结论仍是作者自报，接触密集任务的物理保真度也难以评估。此外，构建一个场景仍需约一小时和不低的模型调用成本，离部署时的在线适应还有距离。</p>
+<p data-l="en">The bottleneck of this route is verification. An agent can quickly build a scene that looks right, but whether its contact, friction and deformable physics are credible requires measurement-grounded feedback (RoboSimStudio calibrates against both visual comparison and force feedback); most sim–real agreement claims so far are self-reported, and the physical fidelity of contact-rich tasks remains hard to assess. Building a scene also still takes about an hour and substantial model costs, far from online adaptation at deployment time.</p>
+<p class="read-more" id="s-sgs"><span data-l="zh">环境建好后如何学习？<a href="../01-manipulation/index.html#s-sgs">SGS：纯仿真 RL 的装配技能、真机视频与结果分析 →</a></span><span data-l="en">Learning after environment construction: <a href="../01-manipulation/index.html#s-sgs">SGS — simulation-trained assembly skills, hardware videos and results →</a></span></p></div>
+</section>
+<section class="sec" id="s7">
+<div class="wrap with-toc prose">
+<h2 class="sh"><span class="no">10</span><span data-l="zh">评测方法与基准</span><span data-l="en">Evaluation methods and benchmarks</span></h2>
+<p data-l="zh">这一方向的定量结果高度依赖 Harness：模型能看到什么观测、能调用哪些工具、动作以什么形式输出、允许思考多久，都会显著改变结果。因此，比较不同模型之前需要先固定框架。现有评测大致分为三类（表 3）。</p>
+<p data-l="en">Quantitative results in this area depend heavily on the harness: what the model observes, which tools it can call, what form its actions take and how long it may think all change the outcome substantially. Models therefore need to be compared on a fixed harness. Current evaluations fall roughly into three groups (Table 3).</p>
+<p data-l="zh">第一类只测上层编排。Butter-Bench [12] 选择了一种几乎不需要低层 Executor 的机器人形态，以便单独评估语言模型的规划和社交理解能力。第二类测量不同接口下的能力。Anthropic 的 Embody 评测集 [17] 在经典控制、仿真四足与人形、机械臂和真实四足机器人上，分别测试 Direct Control、编写控制器、自行训练 RL 策略和监督预训练策略四种接口，并给出跨机器人的归一化综合分数。第三类是通用的机器人策略基准，被用来在语言模型与专用策略之间做比较。RoboDojo [18] 包含 42 个在 Isaac Sim 中运行的双臂任务（ARX X5 平台）和三种平台上的 18 个真机任务，已接入 30 个策略；作者指出，仿真与真机排行榜只部分一致，一些仿真得分较高的模型在真机上明显变差。Robocurve 的 Inspect Robots [21] 使用真机、固定任务和人工分级打分，并公开每次试验的完整录像和模型记录。NVIDIA 的 RoboLab-120 [29] 则在仿真中比较同一模型的不同使用方式及其成本。</p>
+<p data-l="en">The first group measures only high-level orchestration. Butter-Bench [12] chose a robot form factor that needs almost no low-level executor, so that the language model's planning and social understanding could be assessed on their own. The second group measures ability under different interfaces. Anthropic's Embody suite [17] tests direct control, controller writing, self-run reinforcement learning and policy supervision on classic control, a simulated quadruped and humanoid, an arm and a real quadruped, and reports a normalized composite score across robots. The third group consists of general robot-policy benchmarks used to compare language models with specialized policies. RoboDojo [18] contains 42 two-arm tasks in Isaac Sim (ARX X5 platform) and 18 real tasks on three platforms, with 30 policies integrated; its authors note that the sim and real leaderboards only partly agree, and some models with high sim scores drop sharply on real hardware. Robocurve's Inspect Robots [21] uses real robots, fixed tasks and human stage-based grading, and publishes full recordings and model transcripts of every trial. NVIDIA's RoboLab-120 [29] compares different ways of using the same model in simulation, together with their cost.</p>
+<div class="tbl-block">
+<p class="tbl-cap"><b><span data-l="zh">表 3</span><span data-l="en">Table 3</span></b><span data-l="zh">与本方向相关的评测。</span><span data-l="en">Evaluations relevant to this area.</span></p>
+<div class="tile tbl-tile"><div class="tbl"><table>
+<thead><tr>
+<th><span data-l="zh">评测</span><span data-l="en">Evaluation</span></th>
+<th><span data-l="zh">测量对象</span><span data-l="en">What it measures</span></th>
+<th><span data-l="zh">环境</span><span data-l="en">Environment</span></th>
+<th><span data-l="zh">评分方式</span><span data-l="en">Scoring</span></th>
+</tr></thead>
+<tbody>
+<tr><td class="w">Butter-Bench [12]</td><td><span data-l="zh">上层编排</span><span data-l="en">High-level orchestration</span></td><td><span data-l="zh">真实办公室，扫地机器人形态的移动底盘（TurtleBot 4）</span><span data-l="en">Real office, a robot-vacuum-style mobile base (TurtleBot 4)</span></td><td><span data-l="zh">6 个子任务的完成率，与人类对比</span><span data-l="en">Completion rate on 6 subtasks, compared with humans</span></td></tr>
+<tr><td class="w">Embody [17]</td><td><span data-l="zh">同一模型在四种接口下的控制能力</span><span data-l="en">One model's control ability under four interfaces</span></td><td><span data-l="zh">经典控制、仿真四足与人形、机械臂、真实 Go2</span><span data-l="en">Classic control, simulated quadruped and humanoid, arm, real Go2</span></td><td><span data-l="zh">跨机器人的归一化综合分</span><span data-l="en">Normalized composite score across robots</span></td></tr>
+<tr><td class="w">RoboDojo [18]</td><td><span data-l="zh">通用操作策略（包括语言模型）</span><span data-l="en">Generalist manipulation policies, language models included</span></td><td><span data-l="zh">Isaac Sim 中 42 个双臂任务，另有 18 个真机任务</span><span data-l="en">42 two-arm tasks in Isaac Sim plus 18 real tasks</span></td><td><span data-l="zh">成功率，公开排行榜</span><span data-l="en">Success rate, public leaderboard</span></td></tr>
+<tr><td class="w">Inspect Robots [21, 22]</td><td><span data-l="zh">通用模型控制真实机械臂</span><span data-l="en">General models controlling real arms</span></td><td><span data-l="zh">两台 YAM 机械臂，2 个任务</span><span data-l="en">Two YAM arms, 2 tasks</span></td><td><span data-l="zh">人工按 0–4 级打分，每个条件 20 次</span><span data-l="en">Human grading on a 0–4 scale, 20 trials per condition</span></td></tr>
+<tr><td class="w">RoboLab-120 [29]</td><td><span data-l="zh">同一模型的不同使用方式</span><span data-l="en">Different ways of using one model</span></td><td><span data-l="zh">仿真 DROID 机器人</span><span data-l="en">Simulated DROID robot</span></td><td><span data-l="zh">成功率与每回合成本</span><span data-l="en">Success rate and cost per episode</span></td></tr>
+</tbody>
+</table></div></div>
+</div>
+<figure class="fig">
+<div class="tile">
+<div class="fig-grid c2" data-media="butter robodojo"></div>
+</div>
+<figcaption class="fig-cap"><b><span data-l="zh">图 11</span><span data-l="en">Figure 11</span></b><span data-l="zh">两种评测环境：只测编排的真实办公室环境，以及仿真加真机的操作基准。</span><span data-l="en">Two evaluation settings: a real office that tests orchestration only, and a manipulation benchmark spanning simulation and real robots.</span></figcaption>
+</figure>
+<p data-l="zh">目前的大部分数字由模型开发方或研究方自行发布，测试条件互不相同，不宜直接横向比较。第三方、真机、固定框架的评测（如 [21, 22]）样本量仍然很小，每个条件只有 20 次试验。</p>
+<p data-l="en">Most numbers so far are published by the model developers or the researchers themselves under differing conditions and should not be compared directly. Third-party real-robot evaluations on a fixed harness, such as [21, 22], still have small samples, with 20 trials per condition.</p>
+</div>
+</section>
+<section class="sec" id="s8">
+<div class="wrap with-toc prose">
+<h2 class="sh"><span class="no">11</span><span data-l="zh">尚未解决的四个问题</span><span data-l="en">Four open problems</span></h2>
+<h3 id="s8-1"><span class="no">11.1</span><span data-l="zh">程序与动作两种输出形式的取舍</span><span data-l="en">Programs versus actions</span></h3>
+<p data-l="zh">输出程序的优势在于可读、可复用、可以调用工具，而且一次推理可以覆盖多步执行，从而绕开推理延迟。现有对比大多支持这一点：在 Astranomy [29] 中，可以编写代码和调用工具的 agent 模式比直接输出动作高 8.5 个百分点；在 [17] 中，直接驱动关节的表现远低于编写控制器或监督预训练策略。输出动作的优势在于真正的闭环：程序在编写时无法预见所有情况，而逐步输出动作可以对每一次观测作出反应。代价是延迟和成本，这也是 Direct Control 目前主要出现在评测中而不是部署中的原因。Waddle [23] 的设计是一种折中：用代码完成规划和粗粒度控制，把需要快速反馈的部分交给 VLA。</p>
+<p data-l="en">Programs are readable and reusable, can call tools, and let one inference cover many execution steps, sidestepping latency. Existing comparisons mostly support this: in Astranomy [29] the agent mode, which can write code and call tools, beat direct actions by 8.5 percentage points, and in [17] direct joint control fell far behind writing controllers or supervising pretrained policies. The advantage of actions is a true closed loop: a program cannot anticipate every situation when it is written, while step-by-step actions can respond to every observation. The price is latency and cost, which is why direct control so far appears mainly in evaluations rather than deployments. Waddle's [23] design is a compromise: code handles planning and coarse control, and the parts that need fast feedback go to a VLA.</p>
+<h3 id="s8-2"><span class="no">11.2</span><span data-l="zh">通用模型与专用策略的关系</span><span data-l="en">General-purpose models and specialized policies</span></h3>
+<p data-l="zh">Anthropic 称 Fable 5.2 在 RoboDojo 上超过了大多数专门为机器人构建的系统 [32]，但这是内部测试结果，而 RoboDojo 的作者也指出仿真与真机排名只部分一致 [18]。Isola [24] 认为，单看能力，语言模型控制的机器人仍远不如专用方案；它真正的优势在于扩散速度：通过云端模型，智能可以在不改动硬件的情况下迅速覆盖大量已有机器人。[17] 的监督实验给出了更细的图景：通用模型目前更适合作为专用策略的上一层，在专用策略做不到的任务上提供增益。</p>
+<p data-l="en">Anthropic says Fable 5.2 outperforms most systems built specifically for robots on RoboDojo [32], but these are internal results, and RoboDojo's own authors note that sim and real rankings only partly agree [18]. Isola [24] argues that, on capability alone, robots controlled by language models are still far behind dedicated solutions; their real advantage is how fast they spread, since a cloud model can bring intelligence to many existing robots without hardware changes. The supervision experiments in [17] give a finer picture: general-purpose models currently fit best as the layer above specialized policies, adding value on tasks those policies cannot do.</p>
+<h3 id="s8-3"><span class="no">11.3</span><span data-l="zh">成本、可靠性与安全</span><span data-l="en">Cost, reliability and safety</span></h3>
+<p data-l="zh">延迟之外（第 8 节），云端模型还带来成本和安全问题。成本方面，Astranomy 中 agent 模式每回合约消耗 3,090 万 token、36.40 美元 [29]。安全方面，Project Fetch 第一期中，一台机器狗因速度和距离计算错误，险些撞到另一组参与者 [14]；Isola 指出，向 AI 开放 sensor 和 actuator 接口会带来新的攻击面 [24]。因此 Helix [8] 和 Gemini Robotics 2 的 On-Device 模型 [19] 等工业系统都把快速的低层控制放在机器人本地运行。</p>
+<p data-l="en">Beyond latency (Section 8), cloud models raise cost and safety problems. On cost, Astranomy's agent mode used about 30.9 million tokens, or $36.40, per episode [29]. On safety, in phase one of Project Fetch a robot dog, after a speed and distance miscalculation, nearly struck the other team [14], and Isola points out that opening sensor and actuator interfaces to AI creates a new attack surface [24]. Industrial systems such as Helix [8] and the On-Device model of Gemini Robotics 2 [19] therefore run fast low-level control on the robot itself.</p>
+<h3 id="s8-4"><span class="no">11.4</span><span data-l="zh">精细闭环控制仍是主要瓶颈</span><span data-l="en">Fine closed-loop control remains the bottleneck</span></h3>
+<p data-l="zh">Andon Labs 认为，当前“Orchestrator 加 Executor”系统的瓶颈在 Executor 而不在 Orchestrator [12]；但同一基准也显示，前沿模型作为 Orchestrator 只完成了 40% 的任务，主要败在空间推理。2026 年的结果呈现出更清晰的分布：高层规划和 Program Synthesis 进步最快 [16]，而凡是需要根据实时观测精细修正动作的环节，模型普遍失败。Project Fetch 没能把球推回起点，Robocurve 的插槽任务中三个模型都停在最后一步 [22]，[17] 中的模型也无法在没有预训练策略的情况下控制人形机器人。</p>
+<p data-l="en">Andon Labs argues that today's orchestrator-plus-executor systems are bottlenecked by the executor rather than the orchestrator [12]; yet the same benchmark shows frontier models completing only 40% of tasks as orchestrators, failing mainly on spatial reasoning. The 2026 results show a clearer pattern: high-level planning and program synthesis have improved fastest [16], while models generally fail wherever an action must be finely corrected from live observations. Project Fetch could not nudge the ball back to the start, all three models in Robocurve's groove task stalled at the final step [22], and in [17] models could not control a humanoid without a pretrained policy.</p>
+</div>
+</section>
+<section class="sec" id="refs">
+<div class="wrap with-toc prose">
+<h2 class="sh"><span data-l="zh">参考文献</span><span data-l="en">References</span></h2>
+<ol class="refs" id="refList"></ol>
+</div>
+</section>
+<section aria-label="Notes" class="sec-notes" id="notes">
+<div class="wrap with-toc">
+<p data-l="zh"><strong>收录说明。</strong>本页收录 35 项工作和资源，目前都还没有精读笔记；[11] 的 PDF 已存入 vault。数字均来自各自的原始报告，大多为自报。视频和图片直接引用原发布处（项目页、YouTube、公司博客），版权归原作者；超过 8 MB 的视频点击后才加载；以 file:// 方式打开本地文件时，YouTube 嵌入可能无法播放，可改用参考文献中的链接。Waddle [23] 的页面没有注明日期，只能确定早于 2026 年 9 月。</p>
+<p data-l="en"><strong>Coverage notes.</strong> This page covers 35 works and resources, none of which has a deep note yet; the PDF of [11] is saved in the vault. All numbers come from the original reports and are mostly self-reported. Videos and images are embedded from where they were published (project pages, YouTube, company blogs) and belong to their creators; videos over 8 MB load only on click; YouTube embeds may not play when this file is opened via file://, in which case use the links in the references. Waddle's [23] page is undated; it predates September 2026.</p>
+<p data-l="zh"><strong>相关方向。</strong>03 VLA（系统架构、推理与记忆）；04 世界模型（WAM，Astranomy 审核的正是 World Action Model 给出的动作）；00 基础（奖励设计，与 Eureka 相关）；07 评测。<strong>尚未收录：</strong>Text2Motion、LLM-Planner、RoboGen、GenSim、ASIMOV、Blueprint-Bench、Gemini Robotics On-Device（2025）。</p>
+<p data-l="en"><strong>Related directions.</strong> 03 VLA (architecture, reasoning and memory); 04 World models (WAM; Astranomy reviews actions proposed by a world action model); 00 Foundations (reward design, related to Eureka); 07 Evaluation. <strong>Not yet covered:</strong> Text2Motion, LLM-Planner, RoboGen, GenSim, ASIMOV, Blueprint-Bench, Gemini Robotics On-Device (2025).</p>
+</div>
+</section>
+</main>
+<footer>
+<div class="wrap">
+<span><span data-l="zh">Robot Learning KB · Agentic Robotics · 更新于 2026-11-10</span><span data-l="en">Robot Learning KB · Agentic Robotics · updated 2026-11-10</span></span>
+</div>
+</footer>
+<noscript><p style="text-align:center;padding:24px">图表、时间线和参考文献需要 JavaScript。Figures, timeline and references need JavaScript.</p></noscript>
+<script>
+/* ---------- references (numbered chronologically) ---------- */
+const P = `https://`;
+const REFS = [
+{ n:1, id:`saycan`, date:`2022-04`, type:`paper`, short:`SayCan`, org:`Google`,
+  cite:`M. Ahn, A. Brohan, N. Brown, et al.`, title:`Do As I Can, Not As I Say: Grounding Language in Robotic Affordances`, venue:`CoRL 2022`,
+  links:[[`arXiv`,`${P}arxiv.org/abs/2204.01691`],[`Project`,`${P}say-can.github.io/`],[`Video`,`${P}youtu.be/ysFav0b472w`]],
+  row:{ifc:`skill`, out:{zh:`下一个技能`,en:`Next skill`}, exe:{zh:`预训练技能 + Value Function`,en:`Pretrained skills + value functions`}, bot:{zh:`移动机械臂`,en:`Mobile manipulator`}, key:{zh:`厨房 101 条指令：规划 84%，执行 74%`,en:`101 kitchen instructions: 84% planning, 74% execution`}} },
+{ n:2, id:`innermono`, date:`2022-07`, type:`paper`, short:`Inner Monologue`, org:`Google`,
+  cite:`W. Huang, F. Xia, T. Xiao, et al.`, title:`Inner Monologue: Embodied Reasoning through Planning with Language Models`, venue:`CoRL 2022`,
+  links:[[`arXiv`,`${P}arxiv.org/abs/2207.05608`],[`Project`,`${P}innermonologue.github.io/`],[`Video`,`${P}youtu.be/0sJjdxn5kcI`]],
+  row:{ifc:`skill`, out:{zh:`下一个技能（参考执行反馈）`,en:`Next skill (using execution feedback)`}, exe:{zh:`预训练技能`,en:`Pretrained skills`}, bot:{zh:`桌面机械臂、移动机械臂`,en:`Tabletop arm, mobile manipulator`}, key:{zh:`闭环重规划`,en:`Closed-loop replanning`}} },
+{ n:3, id:`progprompt`, date:`2022-09`, type:`paper`, short:`ProgPrompt`, org:`USC · NVIDIA`,
+  cite:`I. Singh, V. Blukis, A. Mousavian, et al.`, title:`ProgPrompt: Generating Situated Robot Task Plans using Large Language Models`, venue:`ICRA 2023`,
+  links:[[`arXiv`,`${P}arxiv.org/abs/2209.11302`],[`Project`,`${P}progprompt.github.io/`],[`Video`,`${P}youtu.be/cawHI_rYQoM`]],
+  row:{ifc:`skill`, out:{zh:`Python 风格的任务程序`,en:`Python-style task programs`}, exe:{zh:`预定义动作`,en:`Predefined actions`}, bot:{zh:`VirtualHome 仿真、真实机械臂`,en:`VirtualHome sim, real arm`}, key:{zh:`带断言检查的计划`,en:`Plans with assertion checks`}} },
+{ n:4, id:`cap`, date:`2022-09`, type:`paper`, short:`Code as Policies`, org:`Google`,
+  cite:`J. Liang, W. Huang, F. Xia, et al.`, title:`Code as Policies: Language Model Programs for Embodied Control`, venue:`ICRA 2023`,
+  links:[[`arXiv`,`${P}arxiv.org/abs/2209.07753`],[`Project`,`${P}code-as-policies.github.io/`],[`X thread`,`${P}twitter.com/jackyliang42/status/1587798590386233344`]],
+  row:{ifc:`program`, out:{zh:`Python 策略代码`,en:`Python policy code`}, exe:{zh:`Perception API + 控制原语`,en:`Perception APIs + control primitives`}, bot:{zh:`桌面机械臂、移动机器人`,en:`Tabletop arm, mobile robot`}, key:{zh:`以代码作为接口的原型`,en:`Prototype of code as the interface`}} },
+{ n:5, id:`voxposer`, date:`2023-07`, type:`paper`, short:`VoxPoser`, org:`Stanford`,
+  cite:`W. Huang, C. Wang, R. Zhang, Y. Li, J. Wu, L. Fei-Fei`, title:`VoxPoser: Composable 3D Value Maps for Robotic Manipulation with Language Models`, venue:`CoRL 2023`,
+  links:[[`arXiv`,`${P}arxiv.org/abs/2307.05973`],[`Project`,`${P}voxposer.github.io/`],[`Video`,`${P}youtu.be/Yvn4eR05A3M`]],
+  row:{ifc:`program`, out:{zh:`组合 3D Value Map 的代码`,en:`Code composing 3D value maps`}, exe:{zh:`VLM 感知 + 运动规划`,en:`VLM perception + motion planner`}, bot:{zh:`Franka 机械臂`,en:`Franka arm`}, key:{zh:`不需要训练`,en:`No training`}} },
+{ n:6, id:`eureka`, date:`2023-10`, type:`paper`, short:`Eureka`, org:`NVIDIA · UPenn`,
+  cite:`Y. J. Ma, W. Liang, G. Wang, et al.`, title:`Eureka: Human-Level Reward Design via Coding Large Language Models`, venue:`ICLR 2024`,
+  links:[[`arXiv`,`${P}arxiv.org/abs/2310.12931`],[`Project`,`${P}eureka-research.github.io/`]],
+  row:{ifc:`program`, out:{zh:`reward 函数代码`,en:`Reward-function code`}, exe:{zh:`RL（Isaac Gym）`,en:`RL (Isaac Gym)`}, bot:{zh:`仿真，含 Shadow Hand`,en:`Simulation, incl. Shadow Hand`}, key:{zh:`83% 的任务超过专家 reward`,en:`Beats expert rewards on 83% of tasks`}} },
+{ n:7, id:`autort`, date:`2024-01`, type:`paper`, short:`AutoRT`, org:`Google DeepMind`,
+  cite:`M. Ahn, D. Dwibedi, C. Finn, et al.`, title:`AutoRT: Embodied Foundation Models for Large Scale Orchestration of Robotic Agents`, venue:`arXiv 2024`,
+  links:[[`arXiv`,`${P}arxiv.org/abs/2401.12963`],[`Project`,`${P}auto-rt.github.io/`]],
+  row:{ifc:`supervise`, out:{zh:`任务提案及执行方式`,en:`Task proposals and how to run them`}, exe:{zh:`Teleop 或自主策略`,en:`Teleoperation or autonomous policies`}, bot:{zh:`机器人车队（最多 20 台同时运行）`,en:`Robot fleet (up to 20 at once)`}, key:{zh:`7.7 万条真机 episode`,en:`77k real episodes`}} },
+{ n:8, id:`helix`, date:`2025-02`, type:`report`, short:`Helix`, org:`Figure`,
+  cite:`Figure AI`, title:`Helix: A Vision-Language-Action Model for Generalist Humanoid Control`, venue:`Figure AI, Feb. 2025`,
+  links:[[`Blog`,`${P}www.figure.ai/news/helix`],[`Helix 02`,`${P}figure.ai/news/helix-02`]],
+  row:{ifc:`supervise`, out:{zh:`传给 System 1 的隐向量`,en:`A latent vector for System 1`}, exe:{zh:`System 1 Visuomotor Policy（200 Hz）`,en:`System 1 visuomotor policy (200 Hz)`}, bot:{zh:`Figure 02 人形`,en:`Figure 02 humanoid`}, key:{zh:`7–9 Hz 的 VLM 指挥 200 Hz 的策略`,en:`A 7–9 Hz VLM directs a 200 Hz policy`}} },
+{ n:9, id:`hirobot`, date:`2025-02`, type:`paper`, short:`Hi Robot`, org:`Physical Intelligence`,
+  cite:`L. X. Shi, B. Ichter, M. Equi, et al.`, title:`Hi Robot: Open-Ended Instruction Following with Hierarchical Vision-Language-Action Models`, venue:`arXiv 2025`,
+  links:[[`arXiv`,`${P}arxiv.org/abs/2502.19417`],[`Blog`,`${P}www.pi.website/research/hirobot`]],
+  row:{ifc:`supervise`, out:{zh:`给 π0 的语言命令`,en:`Language commands to π0`}, exe:`π0`, bot:{zh:`多种机械臂平台`,en:`Several arm platforms`}, key:{zh:`能处理插话和纠正`,en:`Handles interjections and corrections`}} },
+{ n:11, id:`gr15`, date:`2025-09`, type:`report`, short:`Gemini Robotics 1.5`, org:`Google DeepMind`, status:`pdf`,
+  cite:`Gemini Robotics Team, Google DeepMind`, title:`Gemini Robotics 1.5: Pushing the Frontier of Generalist Robots with Advanced Embodied Reasoning, Thinking, and Motion Transfer`, venue:`arXiv 2025`,
+  links:[[`arXiv`,`${P}arxiv.org/abs/2510.03342`],[`Blog`,`${P}deepmind.google/discover/blog/gemini-robotics-15-brings-ai-agents-into-the-physical-world/`],[`Video`,`${P}youtu.be/9FV5ZYytkOQ`]],
+  row:{ifc:`supervise`, out:{zh:`每一步的语言指令 + 工具调用`,en:`Step-by-step instructions + tool calls`}, exe:`Gemini Robotics 1.5 (VLA)`, bot:{zh:`ALOHA、双臂 Franka、Apollo 人形`,en:`ALOHA, bi-arm Franka, Apollo humanoid`}, key:{zh:`可调用网页搜索`,en:`Calls web search`}} },
+{ n:12, id:`butter`, date:`2025-10`, type:`eval`, short:`Butter-Bench`, org:`Andon Labs`,
+  cite:`Andon Labs`, title:`Butter-Bench: Evaluating LLM Controlled Robots for Practical Intelligence`, venue:`arXiv 2025`,
+  links:[[`arXiv`,`${P}arxiv.org/abs/2510.21860`],[`Eval page`,`${P}andonlabs.com/evals/butter-bench`]],
+  row:{ifc:`skill`, out:{zh:`高层动作（前进、旋转、导航、拍照）`,en:`High-level actions (move, rotate, navigate, photo)`}, exe:{zh:`移动底盘`,en:`Mobile base`}, bot:`TurtleBot 4`, key:{zh:`最强模型 40%，人类 95%`,en:`Best model 40%, humans 95%`}} },
+{ n:14, id:`pf1`, date:`2025-11`, type:`report`, short:`Project Fetch (1)`, org:`Anthropic`,
+  cite:`Anthropic`, title:`Project Fetch: Can Claude train a robot dog?`, venue:`Anthropic, Nov. 2025`,
+  links:[[`Post`,`${P}www.anthropic.com/research/project-fetch-robot-dog`],[`Video`,`${P}youtu.be/NGOAUJtdk-4`]] },
+{ n:16, id:`pf2`, date:`2026-06`, type:`report`, short:`Project Fetch (2)`, org:`Anthropic`,
+  cite:`Anthropic`, title:`Project Fetch: Phase two`, venue:`Anthropic, Jun. 2026`,
+  links:[[`Post`,`${P}www.anthropic.com/research/project-fetch-phase-two`]],
+  row:{ifc:`program`, out:{zh:`整套机器人软件：连接、感知与控制代码`,en:`The whole software stack: connection, perception, control`}, exe:{zh:`厂商 SDK + 自写控制器`,en:`Vendor SDK + its own controller`}, bot:`Unitree Go2`, key:{zh:`比无 Claude 的人类组快约 37.7 倍`,en:`About 37.7× faster than the team without Claude`}} },
+{ n:17, id:`cpr`, date:`2026-07`, type:`eval`, short:`Claude plays robotics`, org:`Anthropic`,
+  cite:`S. Berman, M. Ilie, J. Deng, D. Freeman`, title:`Claude plays robotics`, venue:`Anthropic Frontier Red Team, Jul. 2026`,
+  links:[[`Post`,`${P}www.anthropic.com/research/claude-plays-robotics`]],
+  row:{ifc:`multi`, out:{zh:`力矩 / 控制器代码 / RL / 给策略的指令`,en:`Torques / controller code / RL / policy commands`}, exe:{zh:`取决于接口`,en:`Depends on interface`}, bot:{zh:`仿真四足、人形、机械臂；真实 Go2`,en:`Sim quadruped, humanoid, arm; real Go2`}, key:{zh:`Direct Control 下机械臂完整成功 0–5.5%`,en:`Direct arm control: 0–5.5% full success`}} },
+{ n:18, id:`robodojo`, date:`2026-07`, type:`paper`, short:`RoboDojo`, org:`T. Chen et al.`,
+  cite:`T. Chen, et al.`, title:`RoboDojo: A Unified Sim-and-Real Benchmark for Comprehensive Evaluation of Generalist Robot Manipulation Policies`, venue:`arXiv 2026`,
+  links:[[`arXiv`,`${P}arxiv.org/abs/2607.04434`],[`Site`,`${P}robodojo-benchmark.com/`]] },
+{ n:19, id:`gr2`, date:`2026-07`, type:`report`, short:`Gemini Robotics 2`, org:`Google DeepMind`,
+  cite:`Google DeepMind`, title:`Gemini Robotics 2 brings whole-body intelligence to robots`, venue:`Google DeepMind, Jul. 2026`,
+  links:[[`Blog`,`${P}deepmind.google/blog/gemini-robotics-2-brings-whole-body-intelligence-to-robots`],[`ER 2`,`${P}blog.google/innovation-and-ai/models-and-research/google-deepmind/gemini-robotics-er-2/`]] },
+{ n:21, id:`rc51`, date:`2026-09`, type:`eval`, short:`Robocurve (Fable 5.1)`, org:`Robocurve`,
+  cite:`A. Menon, S. Machcha, S. Zou, T. K. Chan, J. Chooi`, title:`Comparing Fable 5.1 to Fable 5 on robotic manipulation`, venue:`Robocurve, Sep. 2026`,
+  links:[[`Report`,`${P}anthropic.robocurve.org/fable-5.1/`],[`Inspect Robots`,`${P}github.com/robocurve/inspect-robots`]] },
+{ n:22, id:`rcastra`, date:`2026-09`, type:`eval`, short:`Robocurve (GPT-6 Astra)`, org:`Robocurve`,
+  cite:`A. Menon, S. Machcha, S. Zou, T. K. Chan, J. Chooi`, title:`GPT-6 Astra on robotic manipulation`, venue:`Robocurve, Sep. 2026`,
+  links:[[`Report`,`${P}openai.robocurve.org/gpt-6-astra/`]],
+  row:{name:`Robocurve`, refs:`21, 22`, ifc:`direct`, out:{zh:`每一轮的末端目标`,en:`End-effector targets each turn`}, exe:{zh:`机械臂底层控制器`,en:`The arm's low-level controller`}, bot:{zh:`两台 YAM 机械臂`,en:`Two YAM arms`}, key:{zh:`放方块：Fable 5 1/20、Fable 5.1 8/20、GPT-6 Astra 19/20`,en:`Block task: Fable 5 1/20, Fable 5.1 8/20, GPT-6 Astra 19/20`}} },
+{ n:23, id:`waddle`, date:`2026`, type:`product`, short:`Waddle`, org:`Waddle Labs`,
+  cite:`H. Ye, Y. Song`, title:`Introducing Waddle: agents that control robots`, venue:`Waddle Labs, 2026 (undated; before Sep. 2026)`,
+  links:[[`Post`,`${P}www.waddlelabs.ai/research/introducing-waddle`],[`Video`,`${P}youtu.be/fGRYBtmzwoI`]],
+  row:{ifc:`program`, out:{zh:`控制程序 + 调用 VLA`,en:`Control programs + VLA calls`}, exe:{zh:`机械臂 SDK、VLA`,en:`Arm SDKs, VLAs`}, bot:{zh:`多种机械臂（含 xArm）`,en:`Various arms (incl. xArm)`}, key:{zh:`约 20 分钟写出可用策略`,en:`A working policy in about 20 min`}} },
+{ n:24, id:`isola`, date:`2026-09`, type:`essay`, short:`Robot-Use Agents`, org:`MIT`,
+  cite:`P. Isola`, title:`Robot-Use Agents`, venue:`Essay, Sep. 2026`,
+  links:[[`Essay`,`${P}web.mit.edu/phillipi/www/writing/robot-use-agents.html`]] },
+{ n:29, id:`astranomy`, date:`2026-10`, type:`report`, short:`Astranomy`, org:`NVIDIA`,
+  cite:`J. X. Yang, A. Khetan, S. Zhang`, title:`Astranomy: An Empirical Study of GPT-6 Astra as a Native Robot Policy`, venue:`NVIDIA Seattle Robotics Lab, Oct. 2026`,
+  links:[[`Report`,`${P}research.nvidia.com/labs/srl/projects/astranomy/`]],
+  row:{ifc:`multi`, out:{zh:`末端动作 / 对 Action Chunk 的审核 / 代码与工具调用`,en:`EEF actions / review of action chunks / code and tools`}, exe:{zh:`底层控制器 / World Action Model / Codex 工具`,en:`Low-level controller / world action model / Codex tools`}, bot:{zh:`仿真 DROID（Franka）`,en:`Simulated DROID (Franka)`}, key:{zh:`66.3% / 66.5% / 74.8%`,en:`66.3% / 66.5% / 74.8%`}} },
+{ n:32, id:`fable52`, date:`2026-11`, type:`report`, short:`Claude Fable 5.2`, org:`Anthropic`,
+  cite:`Anthropic`, title:`Introducing Claude Fable 5.2 and Claude Mythos 5.2`, venue:`Anthropic, Nov. 2026`,
+  links:[[`Post`,`${P}www.anthropic.com/claude-fable-and-mythos-5-2`],[`X post`,`${P}x.com/claudeai/status/2119867132452221045`]],
+  row:{ifc:`unknown`, out:{zh:`未说明`,en:`Not stated`}, exe:{zh:`未说明`,en:`Not stated`}, bot:{zh:`RoboDojo 仿真双臂；真机硬件未公开`,en:`RoboDojo sim two-arm; real hardware undisclosed`}, key:{zh:`RoboDojo 仿真 64.9%（内部测试）`,en:`RoboDojo Sim 64.9% (internal runs)`}} },
+{ n:10, id:`rtc`, date:`2025-06`, type:`paper`, short:`Real-Time Chunking`, org:`Physical Intelligence`,
+  cite:`K. Black, M. Y. Galliker, S. Levine`, title:`Real-Time Execution of Action Chunking Flow Policies`, venue:`NeurIPS 2025`,
+  links:[[`arXiv`,`${P}arxiv.org/abs/2506.07339`],[`Blog`,`${P}www.pi.website/research/real_time_chunking`]] },
+{ n:13, id:`sonic`, date:`2025-11`, type:`paper`, short:`SONIC`, org:`NVIDIA`,
+  cite:`Z. Luo, Y. Yuan, T. Wang, C. Li, et al.`, title:`SONIC: Supersizing Motion Tracking for Natural Humanoid Whole-Body Control`, venue:`arXiv 2025`,
+  links:[[`arXiv`,`${P}arxiv.org/abs/2511.07820`],[`Project`,`${P}nvlabs.github.io/GEAR-SONIC/`]] },
+{ n:15, id:`php`, date:`2026-02`, type:`paper`, short:`PHP`, org:`Amazon FAR et al.`,
+  cite:`Z. Wu, X. Huang, L. Yang, et al.`, title:`Perceptive Humanoid Parkour: Chaining Dynamic Human Skills via Motion Matching`, venue:`RSS 2026`,
+  links:[[`arXiv`,`${P}arxiv.org/abs/2602.15827`],[`Project`,`${P}php-parkour.github.io/`],[`Video`,`${P}youtu.be/IjeBnbm9sto`]] },
+{ n:20, id:`agr2s`, date:`2026-07`, type:`paper`, short:`Agentic Real2Sim`, org:`G. Chen et al.`,
+  cite:`G. Chen, Q. Xia, J. Peng, et al.`, title:`Agentic Real2Sim: Physics-based World Modeling with Vision-Language Agents`, venue:`arXiv 2026`,
+  links:[[`arXiv`,`${P}arxiv.org/abs/2607.19190`]] },
+{ n:25, id:`homebody`, date:`2026-09`, type:`report`, short:`HomeBody`, org:`Stanford TML`,
+  cite:`G. Huh, C. Gu, T. E. Truong, C. K. Liu, G. Tevet`, title:`HomeBody: A Humanoid That Explores, Remembers, and Acts on Its Own`, venue:`Stanford TML, Sep. 2026`,
+  links:[[`Project`,`${P}tml.stanford.edu/homebody/`]],
+  row:{ifc:`skill`, out:{zh:`技能调用与目标（导航、抓取、放置、开抽屉）`,en:`Skill calls and targets (navigate, pick, place, open drawer)`}, exe:{zh:`Skill Library（经典规划）+ AMO Whole-Body Controller`,en:`Skill library (classical planning) + AMO whole-body controller`}, bot:{zh:`Unitree G1 人形`,en:`Unitree G1 humanoid`}, key:{zh:`陌生厨房中的长时程任务；未报告成功率`,en:`Long-horizon tasks in an unseen kitchen; no success rates reported`}} },
+{ n:26, id:`f4r`, date:`2026-09`, type:`paper`, short:`F4R`, org:`Z. Yu et al.`,
+  cite:`Z. Yu, J. Wang, T. Liu, et al.`, title:`F4R: Failure-Driven Recognition, Reconstruction, Refinement, and Redeployment for Continual Robot Self-Improvement`, venue:`arXiv 2026`,
+  links:[[`arXiv`,`${P}arxiv.org/abs/2609.35575`]] },
+{ n:27, id:`arsr`, date:`2026-10`, type:`paper`, short:`Agentic RSR`, org:`Y. Li et al.`,
+  cite:`Y. Li, Y. Feng, S. Sun, et al.`, title:`Agentic RSR: Real-to-Sim-to-Real through Scene Reconstruction and Execution-Grounded Robot Policies`, venue:`arXiv 2026`,
+  links:[[`arXiv`,`${P}arxiv.org/abs/2610.10479`]] },
+{ n:28, id:`robosim`, date:`2026-10`, type:`paper`, short:`RoboSimStudio`, org:`UC Berkeley · NVIDIA`,
+  cite:`K. Chen, S. Xie, U. Yoo, et al.`, title:`RoboSimStudio: An Interactive Toolkit for Rapid Real2Sim of Robot Manipulation Tasks`, venue:`arXiv 2026`,
+  links:[[`arXiv`,`${P}arxiv.org/abs/2610.18835`],[`Project`,`${P}robosimstudio.github.io/`],[`Code`,`${P}github.com/robosimstudio/robosimstudio`],[`X post`,`${P}x.com/keplerccccc/status/2110405269171921243`]] },
+{ n:30, id:`worldmirror`, date:`2026-10`, type:`paper`, short:`WorldMirror`, org:`T. Xu et al.`,
+  cite:`T. Xu, W. Wan, H. Su, et al.`, title:`WorldMirror: Agentic Real-to-Sim Generation of Interactive Worlds from In-the-Wild Robot Demonstrations`, venue:`arXiv 2026`,
+  links:[[`arXiv`,`${P}arxiv.org/abs/2610.31834`]] },
+{ n:31, id:`zerohlm`, date:`2026-10`, type:`paper`, short:`Zero-HLM`, org:`D. Yang et al.`,
+  cite:`D. Yang, M. Liu, Z. Wang, et al.`, title:`Zero-HLM: Generalizable Humanoid Loco-Manipulation without Real Robot Data`, venue:`arXiv 2026`,
+  links:[[`arXiv`,`${P}arxiv.org/abs/2610.35075`]] },
+{ n:33, id:`zelist`, date:`2026-11`, type:`list`, short:`Agent × Real2Sim2Real`, org:`Y. Ze`, noTL:true,
+  cite:`Y. Ze`, title:`Agent × Real2Sim2Real: recent papers on agents × real-to-sim-to-real`, venue:`GitHub list, accessed Nov. 2026`,
+  links:[[`GitHub`,`${P}github.com/YanjieZe/agent-Real2Sim2Real`]] }
+];
+REFS.sort((a, b) => a.n - b.n);
+
+/* ---------- media embedded in figures ---------- */
+const MEDIA = {
+  saycan:{ref:1, kind:`video`, src:`${P}say-can.github.io/img/palm_saycan_teaser_compressed.mp4`, mb:5.4, env:`hw`, credit:`say-can.github.io`, cap:{zh:`SayCan 在厨房中执行指令`,en:`SayCan executing an instruction in a kitchen`}},
+  innermono:{ref:2, kind:`video`, src:`${P}innermonologue.github.io/img/im_teaser_compressed.mp4`, mb:5.4, env:`hw`, credit:`innermonologue.github.io`, cap:{zh:`Inner Monologue 的闭环反馈`,en:`Closed-loop feedback in Inner Monologue`}},
+  progprompt:{ref:3, kind:`yt`, id:`cawHI_rYQoM`, env:`hw`, credit:`YouTube`, cap:{zh:`ProgPrompt 论文视频`,en:`ProgPrompt paper video`}},
+  cap:{ref:4, kind:`video`, src:`${P}code-as-policies.github.io/videos/tasks.mp4`, mb:2.8, env:`hw`, credit:`code-as-policies.github.io`, cap:{zh:`Code as Policies 的桌面任务`,en:`Tabletop tasks in Code as Policies`}},
+  voxposer:{ref:5, kind:`yt`, id:`Yvn4eR05A3M`, env:`hw`, credit:`YouTube`, cap:{zh:`VoxPoser 论文视频`,en:`VoxPoser paper video`}},
+  eureka:{ref:6, kind:`video`, src:`${P}eureka-research.github.io/videos/pen_gallery/pen_spin_center.mp4`, mb:16.4, env:`sim`, credit:`eureka-research.github.io`, cap:{zh:`Eureka 训练出的转笔`,en:`Pen spinning trained with Eureka`}},
+  pf2:{ref:16, kind:`video`, src:`${P}cdn.sanity.io/files/4zrzovbb/website/7c87b95dea9287e1900110b24d343d0f401fa7b0.mp4`, mb:5.4, env:`hw`, credit:`anthropic.com`, cap:{zh:`Project Fetch 第二期`,en:`Project Fetch, phase two`},
+       alt:{kind:`video`, src:`${P}cdn.sanity.io/files/4zrzovbb/website/7c39bcd86cc235edb4ff02cd0f2c023a6152e068.mp4`, mb:5.7, env:`hw`, credit:`anthropic.com`}},
+  waddle:{ref:23, kind:`video`, src:`${P}www.waddlelabs.ai/videos/fold-shirt.mp4`, mb:0.7, env:`hw`, credit:`waddlelabs.ai`, cap:{zh:`Waddle 编写的程序控制机械臂叠 T 恤`,en:`A Waddle-written program folding a T-shirt`}},
+  astra_agent:{ref:29, kind:`video`, src:`${P}research.nvidia.com/labs/srl/projects/astranomy/article/assets/videos/agentic/stacking-demonstration-rollout.mp4`, mb:3.9, env:`sim`, credit:`research.nvidia.com`, cap:{zh:`Astranomy 的 agent 模式完成堆叠任务`,en:`Astranomy's agent mode completing a stacking task`}},
+  autort:{ref:7, kind:`video`, src:`${P}auto-rt.github.io/static/videos/autort_time_lapse.mp4`, mb:13.8, env:`hw`, credit:`auto-rt.github.io`, cap:{zh:`AutoRT 车队采集数据（延时）`,en:`AutoRT's fleet collecting data (time-lapse)`}},
+  helix:{ref:8, kind:`video`, src:`${P}videos.ctfassets.net/qx5k8y1u9drj/77CjmNBjlLzWhOJXILdQMo/c096b1e2a389f49c38e260b2a1d696ec/Helix.mp4`, mb:68.7, env:`hw`, credit:`figure.ai`, cap:{zh:`Helix 发布视频`,en:`Helix release video`}},
+  hirobot:{ref:9, kind:`video`, src:`${P}website.pi-asset.com/hi_robot_blog_raw_cuts/hirobot_demo_compressed.mp4`, mb:62.6, env:`hw`, credit:`pi.website`, cap:{zh:`Hi Robot 演示`,en:`Hi Robot demonstration`}},
+  gr15:{ref:11, kind:`video`, src:`${P}storage.googleapis.com/gdm-deepmind-com-prod-public/media/media/er_capabilities_sept24_NeAsztE.mp4`, mb:6.5, env:`hw`, credit:`deepmind.google`, cap:{zh:`Gemini Robotics-ER 1.5 的 Embodied Reasoning`,en:`Embodied reasoning in Gemini Robotics-ER 1.5`}},
+  gr2:{ref:19, kind:`video`, src:`${P}storage.googleapis.com/gweb-uniblog-publish-prod/original_videos/GeminiRobotics_robot-dog.mp4`, mb:30.2, env:`hw`, credit:`blog.google`, cap:{zh:`Gemini Robotics 2 发布视频`,en:`Gemini Robotics 2 release video`}},
+  cpr:{ref:17, kind:`img`, src:`${P}www-cdn.anthropic.com/images/4zrzovbb/website/2d91fbe744a8e22fa60e8e8d287f1f998e4260f5-720x270.gif`, env:`sim`, fit:true, credit:`anthropic.com`, cap:{zh:`Opus 4.6 编写的 Python 控制器（左）与不施加指令（右）下的仿真人形`,en:`A simulated humanoid under a Python controller written by Opus 4.6 (left) and with zero commands (right)`}},
+  rc51:{ref:21, kind:`video`, src:`${P}anthropic.robocurve.org/fable-5.1/video/bowl-compare.mp4`, mb:3.7, env:`hw`, credit:`robocurve.org`, cap:{zh:`Fable 5 与 Fable 5.1 的放方块录像`,en:`Fable 5 and Fable 5.1 on the block task`}},
+  rcastra:{ref:22, kind:`video`, src:`${P}openai.robocurve.org/gpt-6-astra/video/bowl-astra-vs-fable51-cost.mp4`, mb:3.2, env:`hw`, credit:`robocurve.org`, cap:{zh:`GPT-6 Astra 与 Fable 5.1 的对比（含成本）`,en:`GPT-6 Astra versus Fable 5.1, with cost`}},
+  astra_fail:{ref:29, kind:`video`, src:`${P}research.nvidia.com/labs/srl/projects/astranomy/article/assets/task-rollout/media/BagelsOnPlate_failure_eef.mp4`, mb:27.1, env:`sim`, credit:`research.nvidia.com`, cap:{zh:`Astranomy 直接模式的一个失败案例`,en:`A failure case in Astranomy's direct mode`}},
+  butter:{ref:12, kind:`video`, src:`${P}andonlabs.com/images/evals/butter-bench/butter-bench-demo-small.mp4`, mb:3, env:`hw`, credit:`andonlabs.com`, cap:{zh:`Butter-Bench：机器人在厨房寻找装有黄油的包裹`,en:`Butter-Bench: the robot searching the kitchen for the butter package`}},
+  robodojo:{ref:18, kind:`img`, src:`${P}media.luminis-sim.com/media/home/hero-poster.jpg`, env:`sim`, credit:`robodojo-benchmark.com`, cap:{zh:`RoboDojo 的仿真双臂任务`,en:`A simulated two-arm task in RoboDojo`}},
+  hb_cmp:{ref:25, kind:`img`, src:`${P}tml.stanford.edu/homebody/figures/comparison.webp`, light:true, fit:true, credit:`tml.stanford.edu`, cap:{zh:`常见做法（VLM → VLA → Whole-Body Tracking）与 HomeBody（VLM 直接调用 Skill Library）的对比`,en:`The usual stack (VLM → VLA → whole-body tracking) versus HomeBody (a VLM calling a skill library)`}},
+  hb_pick:{ref:25, kind:`video`, src:`${P}tml.stanford.edu/homebody/videos/pick.mp4`, mb:3.2, env:`hw`, credit:`tml.stanford.edu`, cap:{zh:`抓取技能`,en:`The pick skill`}},
+  hb_drawer:{ref:25, kind:`video`, src:`${P}tml.stanford.edu/homebody/videos/open-drawer.mp4`, mb:4.5, env:`hw`, credit:`tml.stanford.edu`, cap:{zh:`开抽屉`,en:`Opening a drawer`}},
+  hb_retry:{ref:25, kind:`video`, src:`${P}tml.stanford.edu/homebody/videos/retry.mp4`, mb:4.2, env:`hw`, credit:`tml.stanford.edu`, cap:{zh:`从抽屉取药瓶时的重试`,en:`Retrying to pick a pill bottle from a drawer`}},
+  hb_recon:{ref:25, kind:`video`, src:`${P}tml.stanford.edu/homebody/videos/reconstruction.mp4`, mb:4.3, env:`sim`, credit:`tml.stanford.edu`, cap:{zh:`HomeBody 由 Astra 构建的厨房 Digital Twin`,en:`HomeBody's kitchen twin built by Astra`}},
+  rss_teaser:{ref:28, kind:`video`, src:`${P}robosimstudio.github.io/video/teaser.mp4`, mb:5.9, credit:`robosimstudio.github.io`, cap:{zh:`从手机视频到多物理仿真`,en:`From a phone video to a multi-physics simulation`}},
+  rss_gallery:{ref:28, kind:`video`, src:`${P}robosimstudio.github.io/video/gallery.mp4`, mb:3.1, env:`sim`, credit:`robosimstudio.github.io`, cap:{zh:`Agent 构建的仿真示例`,en:`Simulations built by agents`}},
+  rss_deploy:{ref:28, kind:`video`, src:`${P}robosimstudio.github.io/video/bar_deploy.mp4`, mb:1.2, env:`hw`, credit:`robosimstudio.github.io`, cap:{zh:`在仿真中改进的策略部署到真机擦吧台`,en:`A policy improved in simulation wiping the bar on the real robot`}}
+};
+
+
+/* ---------- helpers ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const L = (v) => (v == null ? `` : typeof v === `string` ? v : `<span data-l="zh">${v.zh}</span><span data-l="en">${v.en}</span>`);
+const BY_ID = Object.fromEntries(REFS.map((r) => [r.id, r]));
+const BY_N = Object.fromEntries(REFS.map((r) => [String(r.n), r]));
+const IFC = { skill:{zh:`Skill Selection`,en:`Skill selection`}, program:{zh:`Program Synthesis`,en:`Program synthesis`}, supervise:{zh:`Policy Supervision`,en:`Policy supervision`}, direct:{zh:`Direct Control`,en:`Direct control`}, multi:{zh:`多种接口`,en:`Several`}, unknown:{zh:`未说明`,en:`Not stated`} };
+const ENV = { hw:{zh:`真机`,en:`Hardware`}, sim:{zh:`仿真`,en:`Simulation`} };
+const AUTO_MB = 8;
+const reduceMotion = window.matchMedia(`(prefers-reduced-motion: reduce)`).matches;
+
+function mediaBox(m, hidden) {
+  const tag = m.env ? `<span class="tag ${m.env}"><i></i>${L(ENV[m.env])}</span>` : ``;
+  const credit = m.credit ? `<span class="credit">${m.credit}</span>` : ``;
+  const h = hidden ? ` hidden` : ``;
+  if (m.kind === `video`) {
+    if (m.mb <= AUTO_MB) return `<div class="ph"${h}><video muted loop playsinline preload="none" data-auto data-src="${m.src}"></video>${tag}${credit}</div>`;
+    return `<div class="ph"${h}><video playsinline preload="none" data-click data-src="${m.src}"></video>${tag}<button class="play" type="button"><span class="pbtn"></span><em>${Math.round(m.mb)} MB · ${L({zh:`点击播放`,en:`Click to play`})}</em></button>${credit}</div>`;
+  }
+  if (m.kind === `yt`) return `<div class="ph"${h}><button class="ytb" type="button" data-yt="${m.id}" style="background-image:url('https://i.ytimg.com/vi/${m.id}/hqdefault.jpg')"><span class="pbtn"></span><em>YouTube · ${L({zh:`点击加载`,en:`Click to load`})}</em></button>${tag}${credit}</div>`;
+  if (m.kind === `img`) return `<div class="ph${m.light ? ` light` : ``}"${h}><img loading="lazy" decoding="async" alt="" src="${m.src}"${m.fit ? ` class="fit"` : ``}>${tag}${credit}</div>`;
+  return ``;
+}
+
+/* ---------- render: figures ---------- */
+$$(`.fig-grid[data-media]`).forEach((grid) => {
+  grid.innerHTML = grid.dataset.media.split(/\s+/).map((key, i) => {
+    const m = MEDIA[key];
+    let box = mediaBox(m, false);
+    if (m.alt) {
+      box = `<div class="mwrap">${box}${mediaBox(m.alt, true)}<div class="mtabs" role="group" aria-label="media"><button type="button" aria-pressed="true" data-m="0">${L({zh:`结果`,en:`Result`})}</button><button type="button" class="f" aria-pressed="false" data-m="1">${L({zh:`失败片段`,en:`Failure`})}</button></div></div>`;
+    }
+    return `<figure class="sub">${box}<figcaption>(${String.fromCharCode(97 + i)}) ${L(m.cap)} [${m.ref}]</figcaption></figure>`;
+  }).join(``);
+});
+
+/* ---------- render: timeline (Figure 3) ---------- */
+(() => {
+  let html = ``, year = ``;
+  REFS.filter((r) => !r.noTL).forEach((r) => {
+    const y = r.date.slice(0, 4);
+    if (y !== year) { year = y; html += `<div class="tl-year" aria-hidden="true">${y}</div>`; }
+    html += `<a class="tl-node${r.type !== `paper` ? ` rep` : ``}" href="#ref-${r.n}"><span class="d">${r.date.length > 4 ? r.date : `${r.date} ·`} [${r.n}]</span><span class="t">${r.short}</span><span class="o">${r.org}</span></a>`;
+  });
+  $(`#tlTrack`).innerHTML = html;
+})();
+
+/* ---------- render: Table 1 ---------- */
+$(`#t1body`).innerHTML = REFS.filter((r) => r.row).map((r) => {
+  const w = r.row;
+  return `<tr><td class="w">${w.name || r.short} [${w.refs || r.n}]</td><td><span class="ifc ${w.ifc}">${L(IFC[w.ifc])}</span></td><td>${L(w.out)}</td><td>${L(w.exe)}</td><td>${L(w.bot)}</td><td>${L(w.key)}</td></tr>`;
+}).join(``);
+
+/* ---------- render: reading list and references ---------- */
+
+$(`#refList`).innerHTML = REFS.map((r) => {
+  const links = r.links.map(([t, h]) => `<a href="${h}" target="_blank" rel="noopener">${t}</a>`).join(` · `);
+  const pdf = r.status === `pdf` ? `<span class="st-pdf">${L({zh:`PDF 已存入 vault`,en:`PDF in vault`})}</span>` : ``;
+  const who = r.cite.endsWith(`.`) ? r.cite : `${r.cite}.`;
+  const title = /[.?!]$/.test(r.title) ? r.title : `${r.title}.`;
+  return `<li id="ref-${r.n}"><span class="rn">[${r.n}]</span><div>${who} <span class="rt">${title}</span> ${r.venue}. <span class="rl">${links}</span>${pdf}</div></li>`;
+}).join(``);
+
+/* ---------- citations: turn [n] or [n, m] in the text into links ---------- */
+(function linkCites(root) {
+  const re = /\[(\d{1,2}(?:\s*,\s*\d{1,2})*)\]/g;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      if (!/\[\d/.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
+      for (let p = node.parentElement; p && p !== root; p = p.parentElement) {
+        if (p.tagName === `A` || p.classList.contains(`refs`)) return NodeFilter.FILTER_REJECT;
+      }
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach((node) => {
+    const s = node.nodeValue;
+    const frag = document.createDocumentFragment();
+    let last = 0, m, hit = false;
+    re.lastIndex = 0;
+    while ((m = re.exec(s))) {
+      hit = true;
+      frag.append(s.slice(last, m.index));
+      const span = document.createElement(`span`);
+      span.className = `cite`;
+      span.append(`[`);
+      m[1].split(/\s*,\s*/).forEach((num, i) => {
+        if (i) span.append(`, `);
+        const a = document.createElement(`a`);
+        a.href = `#ref-${num}`;
+        a.textContent = num;
+        if (BY_N[num]) a.title = BY_N[num].short;
+        span.append(a);
+      });
+      span.append(`]`);
+      frag.append(span);
+      last = re.lastIndex;
+    }
+    if (hit) { frag.append(s.slice(last)); node.replaceWith(frag); }
+  });
+})($(`#art`));
+
+/* ---------- contents panel: list, section in view, reading progress ---------- */
+$(`#tocList`).innerHTML = $(`#tocInline > ol`).outerHTML;
+(() => {
+  const links = new Map($$(`#tocList a`).map((a) => [a.getAttribute(`href`).slice(1), a]));
+  const setOn = (id) => {
+    if (!links.has(id)) return;
+    links.forEach((a) => a.classList.remove(`on`));
+    links.get(id).classList.add(`on`);
+  };
+  const spy = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) setOn(e.target.id); });
+  }, { rootMargin: `-42% 0px -52% 0px` });
+  [...links.keys()].map((id) => document.getElementById(id)).filter(Boolean).forEach((el) => spy.observe(el));
+  const panel = $(`#tocSide`), bar = $(`#tocBar`), pct = $(`#tocPct`), abs = $(`#abstract`);
+  let ticking = false;
+  const update = () => {
+    ticking = false;
+    const max = document.documentElement.scrollHeight - innerHeight;
+    const p = max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0;
+    bar.style.width = `${(p * 100).toFixed(1)}%`;
+    pct.textContent = `${Math.round(p * 100)}%`;
+    panel.classList.add(`show`);
+  };
+  addEventListener(`scroll`, () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+  addEventListener(`resize`, update);
+  update();
+})();
+
+/* ---------- hero pills with reading time for the current language ---------- */
+function byline() {
+  const lang = document.documentElement.getAttribute(`data-lang`);
+  const text = $$(`#art .prose [data-l="${lang}"], #art .abstract [data-l="${lang}"]`).map((e) => e.textContent).join(` `);
+  const cjk = (text.match(/[一-鿿]/g) || []).length;
+  const words = (text.replace(/[一-鿿]/g, ` `).match(/[A-Za-z0-9][A-Za-z0-9.'%-]*/g) || []).length;
+  const min = Math.max(1, Math.round(cjk / 420 + words / 230));
+  $(`#heroMeta`).textContent = lang === `zh`
+    ? `更新于 2026-11-10 · 收录 ${REFS.length} 项工作 · 阅读约 ${min} 分钟`
+    : `Updated 2026-11-10 · ${REFS.length} works · about ${min} min read`;
+}
+byline();
+
+/* ---------- behaviour ---------- */
+$(`#lang`).addEventListener(`click`, () => {
+  const h = document.documentElement;
+  const next = h.getAttribute(`data-lang`) === `zh` ? `en` : `zh`;
+  h.setAttribute(`data-lang`, next);
+  h.lang = next === `zh` ? `zh-CN` : `en`;
+  try { localStorage.setItem(`kb-lang`, next); } catch (e) {}
+  try {
+    const url = new URL(location.href);
+    url.searchParams.set(`lang`, next);
+    history.replaceState(null, ``, url);
+  } catch (e) {}
+  syncHomeLanguage();
+  byline();
+});
+
+function syncHomeLanguage() {
+  document.querySelectorAll('a[href]').forEach((a) => {
+    const raw = a.getAttribute('href');
+    if (raw.startsWith('#') || /^(https?:|mailto:)/.test(raw)) return;
+    const url = new URL(raw, location.href);
+    if (!url.pathname.endsWith('/index.html')) return;
+    url.searchParams.set('lang', document.documentElement.dataset.lang);
+    a.href = url.href;
+  });
+}
+syncHomeLanguage();
+
+// lazy videos: small clips loop silently while on screen; large ones show a first frame and wait for a click
+const vio = new IntersectionObserver((entries) => {
+  entries.forEach((e) => {
+    const v = e.target;
+    if (e.isIntersecting) {
+      if (!v.getAttribute(`src`)) {
+        if (v.hasAttribute(`data-click`)) { v.preload = `metadata`; v.src = v.dataset.src + `#t=0.5`; }
+        else { v.src = v.dataset.src; }
+      }
+      if (v.hasAttribute(`data-auto`) && !reduceMotion && !v.closest(`[hidden]`)) v.play().catch(() => {});
+    } else if (v.hasAttribute(`data-auto`) || v.dataset.playing) {
+      v.pause();
+    }
+  });
+}, { rootMargin: `250px 0px`, threshold: 0.15 });
+$$(`video[data-src]`).forEach((v) => {
+  if (reduceMotion && v.hasAttribute(`data-auto`)) v.controls = true;
+  vio.observe(v);
+});
+const lead = $(`#leadVideo`);
+if (reduceMotion && lead) { lead.removeAttribute(`autoplay`); lead.pause(); lead.controls = true; }
+
+document.addEventListener(`click`, (ev) => {
+  const play = ev.target.closest(`.play`);
+  if (play) {
+    const v = play.parentElement.querySelector(`video`);
+    v.src = v.dataset.src;
+    v.controls = true;
+    v.dataset.playing = `1`;
+    v.play().catch(() => {});
+    play.remove();
+    return;
+  }
+  const yt = ev.target.closest(`.ytb`);
+  if (yt) {
+    const f = document.createElement(`iframe`);
+    f.src = `https://www.youtube-nocookie.com/embed/${yt.dataset.yt}?autoplay=1&rel=0`;
+    f.allow = `autoplay; encrypted-media; picture-in-picture; fullscreen`;
+    f.allowFullscreen = true;
+    f.title = `YouTube video`;
+    yt.replaceWith(f);
+    return;
+  }
+  const tab = ev.target.closest(`.mtabs button`);
+  if (tab) {
+    const wrap = tab.closest(`.mwrap`);
+    const i = Number(tab.dataset.m);
+    $$(`:scope > .ph`, wrap).forEach((box, k) => {
+      box.hidden = k !== i;
+      const v = box.querySelector(`video`);
+      if (!v) return;
+      if (k === i) {
+        if (!v.getAttribute(`src`)) v.src = v.dataset.src;
+        if (v.hasAttribute(`data-auto`) && !reduceMotion) v.play().catch(() => {});
+      } else {
+        v.pause();
+      }
+    });
+    $$(`.mtabs button`, wrap).forEach((b) => b.setAttribute(`aria-pressed`, String(b === tab)));
+  }
+});
+
+// briefly highlight a reference when a citation jumps to it
+function highlightRef() {
+  const id = location.hash.slice(1);
+  if (!id.startsWith(`ref-`)) return;
+  const li = document.getElementById(id);
+  if (!li) return;
+  li.classList.add(`hl`);
+  setTimeout(() => li.classList.remove(`hl`), 1800);
+}
+window.addEventListener(`hashchange`, highlightRef);
+</script>
+</body>
+</html>

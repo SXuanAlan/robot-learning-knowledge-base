@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+
+<html data-lang="zh" lang="zh-CN">
+<head>
+<meta content="no-referrer" name="referrer"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>1X · Physical AI · Robot Learning KB</title>
+<meta content="1X 的 World Model 有两种不同角色：先在虚拟未来里评估策略，再用生成视频作为行动中间表示。理解这两个方向，才能判断一段漂亮的预测视频离真实自主操作还有多远。" name="description"/>
+<link href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231d1d1f'/%3E%3Ctext x='32' y='42' font-family='Helvetica,Arial' font-size='26' font-weight='700' text-anchor='middle' fill='%23fff'%3ERL%3C/text%3E%3C/svg%3E" rel="icon"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<script>
+(function () {
+  var l = 'zh';
+  try { var s = localStorage.getItem('kb-lang'); if (s === 'en' || s === 'zh') l = s; } catch (e) {}
+  try { var q = new URLSearchParams(location.search).get('lang'); if (q === 'en' || q === 'zh') l = q; } catch (e) {}
+  var h = document.documentElement;
+  h.setAttribute('data-lang', l);
+  h.lang = l === 'zh' ? 'zh-CN' : 'en';
+})();
+</script>
+<style data-bundle="site">
+/* Shared academic article layout. */
+:root{
+  --page:#ffffff; --band:#f5f5f7; --fill:#e8e8ed; --hair:#d2d2d7;
+  --ink:#1d1d1f; --ink2:#6e6e73; --blue:#0071e3;
+  --done:#1a7f37; --pdf:#0b5cad; --pdf-bg:#e8f1fc; --fail:#d70015;
+  --wip:#9a5200; --wip-bg:#fff3dc; --warm:#b9875f; --warm-ink:#6b4226;
+  --cjk:"PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",sans-serif;
+  --display:"Inter Tight","Inter","Helvetica Neue",Arial,var(--cjk);
+  --text:"Inter","Helvetica Neue",Arial,var(--cjk);
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --gut:20px; --wide:1180px; --toc:200px; --tocgap:56px; --measure:720px;
+  --ease:cubic-bezier(.28,.11,.32,1);
+}
+@media (min-width:735px){:root{--gut:32px}}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:80px;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--page);color:var(--ink);font-family:var(--text);font-size:17px;line-height:1.75;letter-spacing:-.005em;-webkit-font-smoothing:antialiased;overflow-x:clip}
+html[data-lang="zh"] body{letter-spacing:0;font-size:16.5px;line-height:1.82}
+html[data-lang="zh"] [data-l="en"],html[data-lang="en"] [data-l="zh"]{display:none!important}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+img,video{max-width:100%;display:block}
+figure{margin:0}
+strong{font-weight:600}
+.cite{white-space:nowrap}
+
+/* site nav */
+.nav{position:fixed;z-index:50;top:max(8px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:min(1060px,calc(100% - 16px));height:52px;display:flex;align-items:center;gap:6px;padding:0 10px 0 18px;border-radius:18px;background:rgba(255,255,255,.8);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);box-shadow:0 0 0 1px rgba(0,0,0,.07),0 8px 28px rgba(0,0,0,.06)}
+.nav-title{font:600 17px/1 var(--display);letter-spacing:-.01em;color:var(--ink);white-space:nowrap}
+.nav-title:hover{text-decoration:none}
+.crumb{display:inline-flex;align-items:center;gap:8px;height:26px;padding:0 11px 0 10px;margin-left:4px;margin-right:auto;border-radius:999px;background:rgba(0,0,0,.04);box-shadow:inset 0 0 0 1px rgba(0,0,0,.06);color:var(--ink2);font:500 12px/1 var(--text);white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.lang{flex:none;height:30px;min-width:52px;padding:0 12px;border-radius:999px;border:1px solid var(--ink2);background:none;font:500 12px/1 var(--text);color:var(--ink)}
+.lang:hover{background:var(--band)}
+@media (max-width:420px){.nav-title .t-full{display:none}}
+@media (min-width:421px){.nav-title .t-short{display:none}}
+
+/* page frame: one text column, contents list on the left on wide screens */
+.wrap{width:min(var(--wide),calc(100% - 2 * var(--gut)));margin-inline:auto}
+@media (min-width:1180px){.with-toc{padding-left:calc(var(--toc) + var(--tocgap))}}
+.sec{padding:0}
+.prose>p,.prose>ul,.prose>ol,.prose>h2,.prose>h3{max-width:var(--measure)}
+.prose>p{margin:0 0 16px}
+
+/* article header */
+.art-head{padding-top:112px}
+.crumbs{margin:0 0 16px;font-size:13.5px;color:var(--ink2)}
+.crumbs a{color:var(--ink2)}
+.crumbs a:hover{color:var(--blue)}
+.art-head h1{margin:0;max-width:24em;font:600 32px/1.3 var(--display);letter-spacing:-.014em;text-wrap:balance}
+html[data-lang="zh"] .art-head h1{letter-spacing:.01em;line-height:1.42}
+@media (min-width:735px){.art-head h1{font-size:37px}}
+.byline{margin:14px 0 0;font-size:14px;color:var(--ink2)}
+.abstract{max-width:var(--measure);margin:26px 0 0;padding:16px 20px;border-left:3px solid var(--ink);border-radius:0 12px 12px 0;background:var(--band)}
+.abstract .lbl{margin:0 0 6px;font:600 14px/1.4 var(--display)}
+.abstract p{margin:0;font-size:15.5px;line-height:1.75}
+html[data-lang="zh"] .abstract p{line-height:1.8}
+
+/* headings */
+h2.sh{margin:56px 0 14px;font:600 25px/1.4 var(--display);letter-spacing:-.01em;scroll-margin-top:84px;text-wrap:balance}
+html[data-lang="zh"] h2.sh{letter-spacing:0}
+.prose h3{margin:32px 0 10px;font:600 19px/1.5 var(--display);scroll-margin-top:84px}
+h2.sh .no,.prose h3 .no{margin-right:.55em;font-variant-numeric:tabular-nums}
+
+/* lists that replaced the cards */
+.defs,.routes{margin:4px 0 22px;padding-left:1.3em}
+.defs li,.routes li{margin:0 0 12px}
+.defs strong,.routes strong{display:block;margin-bottom:2px;font-weight:600}
+.defs strong{display:inline;margin-right:10px}
+.defs .lv{display:inline;font-size:13px;color:var(--ink2)}
+.routes li::marker{font-weight:600;color:var(--ink2)}
+
+/* contents */
+.toc ol{list-style:none;margin:0;padding:0}
+.toc a{position:relative;display:flex;align-items:baseline;gap:8px;padding:5px 10px;color:var(--ink2);font-size:13px;line-height:1.4}
+.toc a:hover{color:var(--ink);text-decoration:none}
+.toc .no{flex:none;min-width:18px;font-variant-numeric:tabular-nums}
+.toc ol ol a{padding:3px 10px 3px 36px;font-size:12.5px}
+.toc ol ol .no{min-width:30px}
+.toc a.on{color:var(--ink);font-weight:600}
+.toc a.on::before{content:"";position:absolute;left:-1px;top:6px;bottom:6px;width:2px;border-radius:2px;background:var(--blue)}
+.toc-float{display:none}
+@media (min-width:1180px){
+  .toc-float{display:flex;flex-direction:column;position:fixed;z-index:40;top:112px;left:max(var(--gut),calc((100vw - var(--wide)) / 2));width:var(--toc);max-height:calc(100% - 140px)}
+  .toc-inline{display:none}
+}
+.toc-head{display:flex;align-items:baseline;justify-content:space-between;padding:0 10px 8px;font:600 13px/1 var(--display);color:var(--ink)}
+.toc-head .pct{font:500 11px/1 var(--mono);color:var(--ink2)}
+.toc-bar{flex:none;height:2px;margin:0 10px 8px 0;background:var(--fill);overflow:hidden}
+.toc-bar i{display:block;width:0;height:100%;background:var(--blue)}
+.toc-list{overflow:auto;border-left:1px solid var(--fill)}
+.toc-foot{display:flex;gap:14px;margin:10px 0 0;padding-left:10px;font-size:12px}
+.toc-foot a{color:var(--ink2);white-space:nowrap}
+.toc-inline{max-width:var(--measure);margin:22px 0 0;padding:12px 8px 10px;border:1px solid var(--fill);border-radius:12px}
+.toc-inline .lbl{display:block;padding:0 10px 6px;font:600 13px/1 var(--display)}
+@media (min-width:735px){.toc-inline>ol{columns:2;column-gap:20px}.toc-inline li{break-inside:avoid}}
+
+/* figures and tables */
+.fig,.tbl-block{max-width:920px;margin:26px 0 30px}
+.tile{padding:12px;border-radius:14px;background:var(--band)}
+.fig-cap,.tbl-cap{margin:10px 2px 0;font-size:13.5px;line-height:1.65;color:var(--ink2)}
+.fig-cap b,.tbl-cap b{margin-right:6px;color:var(--ink);font-weight:600}
+.tbl-cap{margin:0 2px 8px}
+.fig-grid{display:grid;grid-template-columns:1fr;gap:14px 12px}
+@media (min-width:600px){.fig-grid.c2,.fig-grid.c3{grid-template-columns:1fr 1fr}}
+@media (min-width:900px){.fig-grid.c3{grid-template-columns:1fr 1fr 1fr}}
+.sub figcaption{margin:7px 2px 0;font-size:12.5px;line-height:1.5;color:var(--ink2)}
+.ph{position:relative;overflow:hidden;background:#101114;aspect-ratio:16/9;border-radius:10px}
+.ph.light{background:#fff}
+.ph>video,.ph>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ph>.fit{object-fit:contain}
+.tag{position:absolute;left:8px;top:8px;z-index:3;display:inline-flex;align-items:center;gap:6px;height:21px;padding:0 8px 0 7px;border-radius:999px;background:rgba(255,255,255,.86);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);font:500 10.5px/1 var(--text);color:var(--ink);pointer-events:none}
+.tag i{width:6px;height:6px;border-radius:50%;background:var(--ink2)}
+.tag.sim i{background:var(--blue)}
+.tag.hw i{background:var(--done)}
+.credit{position:absolute;right:8px;bottom:8px;z-index:3;max-width:72%;padding:3px 7px;border-radius:7px;background:rgba(0,0,0,.55);color:#fff;font:500 10px/1.2 var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.play,.ytb{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:0;padding:0;color:#fff;background:linear-gradient(180deg,rgba(0,0,0,0) 35%,rgba(0,0,0,.45))}
+.ytb{background-size:cover;background-position:center}
+.ytb::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05) 35%,rgba(0,0,0,.5))}
+.pbtn{position:relative;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.9);box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.pbtn::after{content:"";position:absolute;left:17px;top:13px;border-style:solid;border-width:9px 0 9px 14px;border-color:transparent transparent transparent var(--ink)}
+.play em,.ytb em{position:relative;font:500 11px/1 var(--text);font-style:normal;padding:5px 9px;border-radius:999px;background:rgba(0,0,0,.5)}
+.ph iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.mwrap{position:relative}
+.mtabs{position:absolute;right:8px;top:8px;z-index:4;display:flex;gap:2px;padding:2px;border-radius:999px;background:rgba(255,255,255,.88)}
+.mtabs button{height:20px;padding:0 9px;border:0;border-radius:999px;background:none;font:500 10.5px/1 var(--text);color:var(--ink2)}
+.mtabs button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.mtabs button.f[aria-pressed="true"]{background:var(--fail)}
+
+/* figure 2: System 2 / 1 / 0 */
+.s3{display:grid;grid-template-columns:1fr;gap:10px}
+@media (min-width:900px){.s3{grid-template-columns:minmax(0,1fr) 60px minmax(0,1fr) 60px minmax(0,1fr);align-items:start}}
+.s3-col{display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:12px;background:var(--page)}
+.s3-h{font:600 15px/1.2 var(--display);text-align:center}
+.s3-in{font-size:12px;line-height:1.4;color:var(--ink2);text-align:center}
+.s3-box{padding:12px 10px;border-radius:10px;background:var(--ink);color:#fff;text-align:center;font:600 14px/1.3 var(--display)}
+.s3-out{font-size:12px;color:var(--ink2);text-align:center}
+.s3-q{padding:8px 10px;border-radius:9px;background:#fbf6f1;box-shadow:inset 0 0 0 1.5px var(--warm);font-size:12.5px;line-height:1.5;color:var(--warm-ink)}
+.s3-link{display:flex;align-items:center;justify-content:center;gap:6px;color:var(--ink2);font-size:12px;line-height:1.35;text-align:center}
+.s3-link b{font-size:15px;font-weight:400}
+.s3-link .h{display:none}
+@media (min-width:900px){.s3-link{flex-direction:column;padding-top:88px}.s3-link .v{display:none}.s3-link .h{display:inline}}
+.s3-foot{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px;padding:12px;border-radius:12px;background:var(--page)}
+.s3-foot .k{font:600 12.5px/1.4 var(--display);color:var(--ink)}
+@media (min-width:735px){.s3-foot{grid-template-columns:minmax(0,.8fr) minmax(0,1fr) minmax(0,1fr);align-items:center}}
+
+/* tables (booktabs) */
+.tbl-tile{padding:0;background:none}
+.tbl{overflow-x:auto;overscroll-behavior-x:contain}
+.tbl table{width:100%;min-width:700px;border-collapse:collapse;font-size:13.5px;line-height:1.55;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
+.tbl th{padding:9px 10px 7px;text-align:left;vertical-align:bottom;font-size:12.5px;font-weight:600;color:var(--ink);border-bottom:1px solid var(--ink);white-space:nowrap}
+.tbl td{padding:8px 10px;text-align:left;vertical-align:top;border-bottom:1px solid var(--fill)}
+.tbl tbody tr:last-child td{border-bottom:0}
+.tbl td.w{font-weight:600;white-space:nowrap}
+.tbl td.w .cite{font-weight:400}
+
+/* references, notes, footer */
+.refs{list-style:none;margin:0;padding:0;max-width:var(--measure);font-size:14px;line-height:1.6}
+.refs li{display:grid;grid-template-columns:40px 1fr;gap:6px;padding:5px 6px;border-radius:8px;scroll-margin-top:90px;transition:background .6s var(--ease)}
+.refs li.hl{background:#fff6d6}
+.refs .rn{font:500 12px/1.85 var(--mono);color:var(--ink2)}
+.refs .rt{font-weight:600}
+.refs .rl{white-space:nowrap}
+.st-pdf{display:inline-block;margin-left:6px;padding:0 8px;border-radius:999px;background:var(--pdf-bg);color:var(--pdf);font-size:11.5px;line-height:20px}
+.sec-notes{margin-top:48px;padding-block:24px 30px;border-top:1px solid var(--fill);font-size:13px;line-height:1.7;color:var(--ink2)}
+.sec-notes p{max-width:var(--measure);margin:0 0 8px}
+footer{margin-top:24px;padding:22px 0 36px;border-top:1px solid var(--hair);font-size:12px;line-height:1.6;color:var(--ink2)}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 24px}
+footer a{color:var(--ink2);text-decoration:underline;text-underline-offset:2px}
+
+/* ---------- home page additions ---------- */
+.art-head h1{max-width:22em}
+html[data-lang="zh"] .art-head h1{word-break:keep-all}
+
+/* Table 2: qualitative matrix of data paradigms */
+.dp table{min-width:880px;table-layout:fixed}
+.dp th{white-space:normal;text-align:center}
+.dp th:first-child{text-align:left}
+.dp th small{display:block;margin-top:2px;font-weight:400;font-size:11.5px;color:var(--ink2)}
+.dp thead tr:first-child th.grp{text-align:center;border-bottom:1px solid var(--hair);padding-bottom:5px}
+.dp thead tr:nth-child(2) th{padding-top:5px}
+.dp td{vertical-align:middle}
+.dp td.q{text-align:center}
+.q>i{display:inline-block;min-width:76px;padding:2px 10px;border-radius:999px;font-style:normal;font-size:12.5px;font-weight:500;line-height:1.6}
+.q.g>i{background:#e5f4ea;color:#1a7f37}
+.q.a>i{background:#fff1d6;color:#8a4b00}
+.q.r>i{background:#fde7ea;color:#c0001a}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:9px 2px 0;font-size:12.5px;color:var(--ink2)}
+.legend>span{display:inline-flex;align-items:center;gap:6px}
+.legend .sw{width:10px;height:10px;border-radius:3px}
+.sw.g{background:#bfe5cb}.sw.a{background:#ffd98f}.sw.r{background:#f7b9c1}
+
+/* Figure 2: data row under each layer */
+.s3-data{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin-top:2px;padding-top:9px;border-top:1px dashed var(--hair)}
+.s3-data .k{flex-basis:100%;text-align:center;font:600 11.5px/1.3 var(--display);color:var(--ink2)}
+.s3-data>i{font-style:normal;padding:1px 9px;border-radius:999px;background:var(--band);font-size:12px;line-height:1.6;color:var(--ink)}
+.s3-rate{font-size:11.5px;line-height:1.5;color:var(--ink2);text-align:center}
+.s3-rate>span{display:block;font-variant-numeric:tabular-nums}
+
+/* Table 4: company bets */
+.co table{min-width:860px;table-layout:fixed}
+.co td.w{white-space:normal}
+.co td.w .cite{white-space:nowrap}
+.co td.dt{text-align:center;vertical-align:top}
+.co td.dt .dot{vertical-align:-1px}
+.co th.dt{text-align:center;white-space:normal}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--ink)}
+.dot.o{background:none;box-shadow:inset 0 0 0 1.6px var(--ink2)}
+.co .na{color:var(--hair)}
+.co td.m{color:var(--ink2);font-size:12.5px}
+
+/* Figure 4: map of the branches */
+.map{display:grid;gap:12px}
+.map-row{display:grid;grid-template-columns:1fr;gap:6px}
+@media (min-width:735px){.map-row{grid-template-columns:116px minmax(0,1fr);gap:12px}}
+.map-lbl{padding-top:2px;font:600 12.5px/1.35 var(--display);color:var(--ink2)}
+@media (min-width:735px){.map-lbl{padding-top:12px}}
+.map-boxes{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px}
+.mb{display:flex;flex-direction:column;gap:3px;padding:10px 13px 11px;border-radius:11px;background:var(--page);box-shadow:0 0 0 1px var(--fill);color:var(--ink)}
+a.mb:hover{text-decoration:none;box-shadow:0 0 0 1.5px var(--ink)}
+.mb>b{font:600 14.5px/1.35 var(--display)}
+.mb>.d{font-size:12.5px;line-height:1.55;color:var(--ink2)}
+.mb>.st{align-self:flex-start;margin-top:5px;padding:0 8px;border-radius:999px;background:var(--wip-bg);color:var(--wip);font-size:11px;line-height:19px}
+.mb>.st.ok{background:#e5f4ea;color:var(--done)}
+.mb.ok{box-shadow:0 0 0 1.5px var(--ink)}
+.map-lens{display:flex;flex-wrap:wrap;gap:6px}
+.map-row.lens .map-lbl{padding-top:5px}
+.map-lens>i{font-style:normal;padding:3px 11px;border-radius:999px;background:var(--page);box-shadow:0 0 0 1px var(--fill);font-size:12.5px;color:var(--ink2)}
+
+/* Navigation hub and shared branch pages. */
+.read-more{margin:20px 0!important;font-weight:600;font-size:15px}
+.intro{max-width:var(--measure);margin:20px 0 0;color:var(--ink2)}
+.home .art-head h1{max-width:none;font-size:clamp(32px,5vw,48px)}
+.home .byline{font-size:13px}
+.home h2.sh{margin-top:44px}
+.home .fig,.home .tbl-block{margin-top:18px}
+.home .map-boxes{grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr))}
+.map-lens>a{padding:3px 11px;border-radius:999px;background:var(--page);box-shadow:0 0 0 1px var(--fill);font-size:12.5px}
+.home .co table{min-width:580px;table-layout:auto}
+.home .co td:first-child{white-space:nowrap}
+.image-frame{padding:16px;background:var(--band);border-radius:12px}
+.image-frame img{width:100%;height:auto;background:white;border-radius:6px}
+.paper-diagram{padding:0}
+.paper-diagram img{display:block;border-radius:0}
+.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:16px;border-radius:12px;background:var(--band);margin:24px 0}
+.flow>div{padding:14px;background:white;border-radius:8px;font-size:14px}
+.flow strong{display:block;margin-bottom:6px}
+.flow span{font-size:13px;color:var(--ink2)}
+.flow .arrow{display:block;color:var(--blue);margin-top:8px}
+.formula{font-family:var(--mono);font-size:14px;overflow-x:auto;padding:16px;background:var(--band);border-radius:8px}
+.formula{line-height:1.9;margin:18px 0;max-width:100%;overflow-wrap:anywhere}
+.branch-flow{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))!important}
+.algo-controls{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}
+.algo-controls button{font:inherit;font-size:13px;background:var(--page);border:1px solid var(--hair);border-radius:999px;padding:7px 14px;color:var(--ink);cursor:pointer}
+.algo-controls button[aria-pressed="true"]{background:var(--ink);color:var(--page);border-color:var(--ink)}
+.algo-map{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:20px 0}
+.algo-group{background:var(--band);padding:16px;border-radius:14px;min-width:0}
+.algo-group[hidden]{display:none}
+.prose .algo-group h3{font-size:15px;margin:0 0 12px;line-height:1.5}
+.algo-card{display:block;background:var(--page);border:1px solid var(--hair);border-radius:9px;padding:12px;margin:8px 0;color:var(--ink);text-decoration:none!important;font-size:12.5px;line-height:1.6}
+.algo-card:hover,.algo-card:focus-visible{border-color:var(--blue)}
+.algo-card strong{display:block;font-size:14px;margin-bottom:4px;color:var(--blue)}
+.algo-card>span{color:var(--ink2)}
+.gap-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:20px 0}
+.gap-cards>div{background:var(--band);padding:18px;border-radius:12px;font-size:14px;line-height:1.7}
+.gap-cards strong{display:block;margin-bottom:6px}
+.principle-note{border-left:3px solid var(--blue);padding:4px 0 4px 20px;margin:24px 0}
+.principle-note p{margin:8px 0}
+@media(max-width:850px){.algo-map{grid-template-columns:repeat(2,minmax(0,1fr))}.gap-cards{grid-template-columns:1fr}}
+@media(max-width:550px){.algo-map{grid-template-columns:1fr}.branch-flow{grid-template-columns:1fr!important}.branch-flow>div{border:0!important;padding:10px 0!important}.branch-flow>div::after{display:none}.formula{font-size:12px}}
+@media(min-width:851px){
+  .algo-map:not([data-filtered]) .algo-group:nth-child(1){grid-column:1;grid-row:1 / 3}
+  .algo-map:not([data-filtered]) .algo-group:nth-child(2){grid-column:2;grid-row:1}
+  .algo-map:not([data-filtered]) .algo-group:nth-child(3){grid-column:3;grid-row:1 / 3}
+  .algo-map:not([data-filtered]) .algo-group:nth-child(4){grid-column:2;grid-row:2 / 4}
+  .algo-map:not([data-filtered]) .algo-group:nth-child(5){grid-column:1;grid-row:3}
+  .algo-map:not([data-filtered]) .algo-group:nth-child(6){grid-column:3;grid-row:3}
+}
+@media(max-width:760px){
+  .tbl-block::after{content:'↔ 横向滚动查看完整表格';display:block;margin-top:8px;color:var(--ink2);font-size:12px}
+  html[data-lang="en"] .tbl-block::after{content:'↔ Scroll horizontally for the full table'}
+}
+.note{border-left:3px solid var(--hair);padding-left:16px;color:var(--ink2);font-size:14px}
+.mb{min-width:0}.mb>b{overflow-wrap:anywhere}
+.refs .rl{white-space:normal}.refs li>div{min-width:0;overflow-wrap:anywhere}
+.tbl:focus-visible{outline-offset:4px}
+.media-source{display:inline-block;margin-top:4px}
+@media(max-width:599px){.flow{grid-template-columns:1fr}.map-boxes{grid-template-columns:1fr}.s3-in,.s3-data{overflow-wrap:anywhere}}
+
+/* Static, preview-safe media and in-text comparisons. */
+.ph{background:#ececef}
+.ph video{object-fit:contain}
+.ph .credit{bottom:48px;pointer-events:none;font-size:10px;max-width:90%;white-space:normal}
+.ph .media-error{position:absolute;inset:20% 12px auto;padding:12px;background:#fff;color:var(--ink);font-size:13px;text-align:center}
+.media-error[hidden],.ph[hidden]{display:none!important}
+.ytb{display:flex;text-decoration:none;color:white}
+.fig-grid:has(>.sub:only-child){grid-template-columns:minmax(0,1fr);max-width:680px;margin-inline:auto}
+.learning-loop{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border-block:1px solid var(--hair);padding:22px 0;margin:24px 0}
+.learning-loop>div{position:relative;padding:0 20px;border-right:1px solid var(--hair)}
+.learning-loop>div:first-child{padding-left:0}
+.learning-loop>div:last-child{border:0}
+.learning-loop>div:not(:last-child)::after{content:'→';position:absolute;right:-7px;top:0;background:var(--page);color:var(--blue)}
+.learning-loop strong{display:block;font-size:15px;line-height:1.4;margin-bottom:8px}
+.learning-loop>div>span{display:block;font-size:13px;line-height:1.65;color:var(--ink2)}
+.control-layers{grid-template-columns:repeat(3,minmax(0,1fr))}
+.company-flow{grid-template-columns:repeat(3,minmax(0,1fr))}
+.lineage{display:grid;grid-template-columns:1.5fr 1fr;gap:24px;border-top:1px solid var(--hair);padding:18px 0}
+.lineage>div+div{border-left:1px solid var(--hair);padding-left:24px}
+.lineage h3{margin:0!important;font-size:17px}
+.lineage small{display:block;color:var(--ink2);font-size:12px;font-weight:400;margin-top:4px}
+.lineage p{margin:12px 0!important;color:var(--ink2);font-size:13px}
+.lineage-children{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px}
+.lineage-children b{display:block;font-size:15px}
+.lineage-children>div>span{display:block;font-size:12px;line-height:1.6;color:var(--ink2);margin-top:5px}
+.lineage-bridge{font-size:13px;line-height:1.8;border-block:1px solid var(--hair);padding:14px 0}
+.exchange{border-block:1px solid var(--hair);margin:24px 0;display:grid;grid-template-columns:1fr 1fr;gap:26px;padding:22px 0}
+.exchange h3{margin:5px 0!important;font-size:16px}
+.exchange time{font:12px var(--mono);color:var(--ink2)}
+.exchange p,.exchange a{font-size:14px}
+.anchor{display:block;scroll-margin-top:80px}
+.trial-chart{border-block:1px solid var(--hair);padding:18px 0}
+.trial-chart-head{font-size:13px;font-weight:600;margin-bottom:16px}
+.trial-row{display:grid;grid-template-columns:110px minmax(0,1fr) 144px;align-items:center;gap:14px;margin:14px 0;font-size:13px}
+.trial-track{height:17px;background:var(--band);border-radius:3px;overflow:hidden}
+.trial-track i{display:block;height:100%;width:var(--success);background:#717983}
+.trial-row.total{border-top:1px solid var(--hair);padding-top:16px;font-weight:600}
+.trial-row.total .trial-track i{background:var(--blue)}
+.trial-value{text-align:right;font-variant-numeric:tabular-nums}
+@media(max-width:599px){.trial-row{grid-template-columns:1fr 1fr;gap:7px;margin:18px 0}.trial-track{grid-column:1/-1;grid-row:2}.trial-value{grid-column:2;grid-row:1}.trial-row.total{padding-top:18px}}
+.home .company-entry{padding:18px 20px;gap:6px}
+.home .company-entry>b{font-size:19px}
+@media(max-width:599px){
+  .learning-loop{grid-template-columns:1fr 1fr;row-gap:25px}
+  .learning-loop>div{padding:0 12px!important}.learning-loop>div:nth-child(even){border:0}
+  .learning-loop>div:nth-child(even)::after{display:none}
+  .lineage,.exchange{grid-template-columns:1fr;gap:22px}
+  .lineage>div+div{border-left:0;border-top:1px solid var(--hair);padding:20px 0 0}
+  .control-layers{grid-template-columns:1fr;gap:22px}
+  .control-layers>div{border:0}.control-layers>div::after{display:none}
+  .company-flow{grid-template-columns:1fr;gap:20px}
+  .company-flow>div{border:0}.company-flow>div::after{display:none}
+}
+
+/* SGS results and training pipeline, alongside the manipulation discussion. */
+.sgs-section{margin-top:44px;scroll-margin-top:88px}.sgs-section>h3{font-size:24px;line-height:1.35}.sgs-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;background:var(--band);border-radius:12px;padding:16px}.sgs-flow>div{padding:12px;background:var(--page);border-radius:8px;font-size:13px}.sgs-flow b,.sgs-flow span{display:block}.sgs-flow b{margin-bottom:8px}.sgs-math{font-family:Georgia,serif;overflow-wrap:anywhere}.sgs-chart{padding:22px;background:var(--band);border-radius:12px}.sgs-legend{display:flex;flex-wrap:wrap;gap:16px;font-size:12px}.sgs-legend>span{display:inline-flex;align-items:center;gap:6px}.sgs-legend i{display:inline-block;width:12px;height:12px;border-radius:3px}.sgs-chart .sim{background:#94a3b8}.sgs-chart .real{background:#26835a}.sgs-result{margin-top:18px}.sgs-result h4{margin:0 0 7px;font-size:14px}.sgs-bar{position:relative;height:28px;background:#fff;margin:5px 0;border-radius:4px;overflow:hidden}.sgs-bar>i{position:absolute;inset:0 auto 0 0;opacity:.30}.sgs-bar>span{position:relative;padding:0 8px;font-size:12px;line-height:28px;font-variant-numeric:tabular-nums}.sgs-section .ph video{width:100%;height:100%;object-fit:contain}.sgs-section .ph{background:#f5f5f7}@media(max-width:650px){.sgs-flow{grid-template-columns:1fr}.sgs-chart{padding:14px}}
+
+/* MathML is generated from LaTeX during the build, and renders without JavaScript. */
+.formula{font-family:"STIX Two Math","STIXGeneral","Cambria Math",math;font-size:17px;line-height:1.5;letter-spacing:normal;overflow-wrap:normal;overflow-x:auto;overscroll-behavior-x:contain;padding:20px 16px;margin:22px 0;max-width:100%}
+.formula .katex{display:block;width:max-content;min-width:100%}
+.formula math{margin:0;font-family:inherit}
+.math-inline{font-size:1.05em;letter-spacing:normal;white-space:nowrap}
+.math-inline math{font-family:"STIX Two Math","STIXGeneral","Cambria Math",math}
+@media(max-width:650px){.formula{font-size:16px;padding:18px 14px}.map-lbl{max-width:100%}}
+
+/* Algorithm strengths, limitations and mechanisms are distinct, labeled rows. */
+.algo-card{font-size:13px;line-height:1.65}
+.algo-card>strong{margin-bottom:10px}
+.algo-card .algo-facts{display:grid;gap:7px}
+.algo-card .algo-fact{display:block;border-left:3px solid;padding:7px 9px;border-radius:0 5px 5px 0}
+.algo-card .algo-fact b{display:block;font-size:11.5px;font-weight:650;margin-bottom:2px}
+.algo-card .algo-fact>span{display:block}
+.algo-card .benefit{background:#edf7f1;border-color:#79b897;color:#245f42}
+.algo-card .limit{background:#fff1ed;border-color:#db9c8b;color:#864333}
+.algo-card .mechanism{background:#eef3f9;border-color:#9eafc6;color:#425b78}
+.paper-scroll{overflow-x:auto;overscroll-behavior-x:contain;background:#fff;border:1px solid var(--hair);border-radius:10px;padding:12px}
+.paper-scroll img{display:block;width:100%;height:auto;min-width:680px;margin:auto}
+.paper-scroll img[src*="pi05-attention"]{width:480px;min-width:440px;max-width:100%}
+@media(max-width:650px){.paper-scroll{padding:10px}.paper-scroll::after{content:"← 滑动查看完整图 →";display:block;font-size:13px;color:var(--ink2);position:sticky;left:0}.algo-card .algo-fact{padding:8px 10px}}
+
+.paper-scroll.narrow img{width:480px;min-width:440px;max-width:none}
+
+@media(max-width:650px){html[data-lang="en"] .paper-scroll::after{content:"← Scroll to view the full figure →"}}
+/* Match LaTeX aligned columns in browsers implementing MathML Core. */
+.formula mtable[columnalign="right left"] mtd:nth-child(odd){text-align:right}
+.formula mtable[columnalign="right left"] mtd:nth-child(even){text-align:left}
+
+.sgs-flow .math-inline,.sgs-flow .math-inline .katex{display:inline}
+</style>
+</head>
+<body class="article" data-page="article" data-ref-base="../../../">
+<nav aria-label="Robot Learning KB" class="nav"><a class="nav-title" href="../../../index.html"><span class="t-full">Robot Learning KB</span><span class="t-short">RL KB</span></a><span class="crumb"><a href="../index.html">Physical AI</a> / 1X</span><button aria-label="Switch language / 切换语言" class="lang" id="lang" type="button"><span data-l="zh">EN</span><span data-l="en">中文</span></button></nav>
+<aside aria-label="Contents" class="toc toc-float" id="tocSide"><div class="toc-head"><span><span data-l="zh">目录</span><span data-l="en">Contents</span></span><span class="pct" id="tocPct">0%</span></div><div class="toc-bar"><i id="tocBar"></i></div><div class="toc-list" id="tocList"></div><div class="toc-foot"><a href="#top">↑ <span data-l="zh">顶部</span><span data-l="en">Top</span></a><a href="../index.html"><span data-l="zh">公司综述</span><span data-l="en">Companies</span></a></div></aside>
+<main id="art"><header class="art-head" id="top"><div class="wrap with-toc"><p class="crumbs"><a href="../../../index.html">Robot Learning KB</a> / <a href="../index.html">Physical AI</a> / 1X</p><h1>1X</h1><p class="byline" id="heroMeta"></p><div class="abstract"><p data-l="zh">1X 的 World Model 有两种不同角色：先在虚拟未来里评估策略，再用生成视频作为行动中间表示。理解这两个方向，才能判断一段漂亮的预测视频离真实自主操作还有多远。</p><p data-l="en">1X uses world models in two distinct roles: evaluating policies through predicted futures, and generating video as an intermediate representation for action. Separating them clarifies what a convincing video says about physical autonomy.</p></div><nav aria-label="Contents" class="toc toc-inline" id="tocInline"><span class="lbl"><span data-l="zh">目录</span><span data-l="en">Contents</span></span><ol><li><a href="#evaluation"><span class="no">1</span><span><span data-l="zh">2025：用世界模型评估策略</span><span data-l="en">2025: evaluating policies with a world model</span></span></a></li><li><a href="#policy"><span class="no">2</span><span><span data-l="zh">2026：先生成视频，再提取动作</span><span data-l="en">2026: generate video, then infer actions</span></span></a></li><li><a href="#grounding"><span class="no">3</span><span><span data-l="zh">动作落地的数据成本没有消失</span><span data-l="en">The data cost of action grounding remains</span></span></a></li><li><a href="#latency"><span class="no">4</span><span><span data-l="zh">速度与生成质量怎样影响闭环</span><span data-l="en">Latency and generative quality in control</span></span></a></li><li><a href="#comparison"><span class="no">5</span><span><span data-l="zh">与 Dyna、GR00T 2 的不同</span><span data-l="en">Contrast Dyna and GR00T 2</span></span></a></li><li><a href="#refs"><span data-l="zh">参考文献</span><span data-l="en">References</span></a></li></ol></nav></div></header><section class="sec" id="evaluation"><div class="wrap with-toc prose"><h2 class="sh"><span class="no">1</span><span data-l="zh">2025：用世界模型评估策略</span><span data-l="en">2025: evaluating policies with a world model</span></h2><p data-l="zh">早期 1X World Model 输入历史与候选动作，预测未来视觉和结果，用于比较策略与 checkpoint <span class="cite">[<a href="#ref-54">54</a>]</span>。它的价值是降低真机评测成本，让同一初始条件下的反事实比较更容易；它并没有消除世界模型本身的评测需求。</p><p data-l="en">The earlier 1X World Model predicts visual futures and outcomes conditioned on histories and candidate actions, supporting policy and checkpoint comparison <span class="cite">[<a href="#ref-54">54</a>]</span>. It can reduce hardware evaluation cost and enable controlled counterfactuals, but the evaluator itself still needs validation.</p><p data-l="zh">关键测试是模型能否保持策略排序，并识别真实失败。若一个策略恰好利用了世界模型的误差，在模型里越优化反而可能越偏离现实。因而需要保留没有用于拟合的真机结果，持续检查仿真预测与真实排序的相关性。</p><p data-l="en">The test is whether it preserves policy rankings and recognizes failures. Optimizing against model errors can improve predicted outcomes while worsening reality. Held-out physical results are needed to audit agreement with the learned evaluator.</p></div></section><section class="sec" id="policy"><div class="wrap with-toc prose"><h2 class="sh"><span class="no">2</span><span data-l="zh">2026：先生成视频，再提取动作</span><span data-l="en">2026: generate video, then infer actions</span></h2><p data-l="zh">1XWM 的策略路线从文字与起始图像生成未来视频，再由 inverse dynamics model（IDM）提取动作；报告把视频训练与动作落地分为两个阶段 <span class="cite">[<a href="#ref-53">53</a>]</span>。这与直接输出动作的 VLA，以及联合生成视频和动作的 WAM，是不同的因子分解。</p><p data-l="en">The 1XWM policy generates future video from text and an initial frame, then uses an inverse dynamics model (IDM) to recover actions <span class="cite">[<a href="#ref-53">53</a>]</span>. This differs from direct VLA action prediction and joint video–action generation.</p><figure class="fig"><div class="learning-loop company-flow"><div><strong><span data-l="zh">文字 + 图像</span><span data-l="en">Text + image</span></strong><span><span data-l="zh">指定期望行为</span><span data-l="en">Specify intended behavior</span></span></div><div><strong><span data-l="zh">视频生成</span><span data-l="en">Video generation</span></strong><span><span data-l="zh">预测视觉未来</span><span data-l="en">Predict a visual future</span></span></div><div><strong><span data-l="zh">IDM → 执行</span><span data-l="en">IDM → execution</span></strong><span><span data-l="zh">从变化恢复动作</span><span data-l="en">Infer actions from change</span></span></div></div><figcaption class="fig-cap"><span data-l="zh">1XWM 策略的公开生成路径；生成成功与真实执行成功需要分别验证。</span><span data-l="en">The published 1XWM policy path; predicted and physical success need separate validation.</span></figcaption></figure><figure class="fig"><div class="tile"><div class="fig-grid c1" data-media="one_x_launch"><figure class="sub" data-media-key="one_x_launch"><div class="ph"><a class="ytb" href="https://www.youtube.com/watch?v=lS_z60kjVEk" target="_blank" rel="noopener" style="background-image:url('data:image/webp;base64,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')" aria-label="Open video on YouTube"><span class="pbtn"></span><em><span data-l="zh">在 YouTube 播放</span><span data-l="en">Watch on YouTube</span> ↗</em></a><span class="credit">1X · YouTube</span></div><figcaption>(a) <span data-l="zh">1XWM：原作视频预测与 NEO 执行演示</span><span data-l="en">1XWM: original prediction and NEO execution demo</span> <span class="cite">[<a href="#ref-53">53</a>]</span><br><a class="media-source" href="https://www.1x.tech/discover/world-model-self-learning" target="_blank" rel="noopener"><span data-l="zh">项目来源</span><span data-l="en">Project source</span> ↗</a> · <a href="https://www.youtube.com/watch?v=lS_z60kjVEk" target="_blank" rel="noopener"><span data-l="zh">打开视频</span><span data-l="en">Open video</span> ↗</a></figcaption></figure></div></div><figcaption class="fig-cap"><span data-l="zh">1XWM 原作发布视频，保留预测与真机对照的上下文。</span><span data-l="en">Original 1XWM release video, preserving prediction-versus-execution context.</span></figcaption></figure></div></section><section class="sec" id="grounding"><div class="wrap with-toc prose"><h2 class="sh"><span class="no">3</span><span data-l="zh">动作落地的数据成本没有消失</span><span data-l="en">The data cost of action grounding remains</span></h2><p data-l="zh">报告中的 IDM 使用约四百小时机器人数据，包含无任务的 play；视频模型则利用人类 Egocentric 与 NEO 数据进行对齐 <span class="cite">[<a href="#ref-53">53</a>]</span>。所以“某个任务没有机器人示范”和“系统没有用过机器人数据”是不同条件。IDM 需要知道这具身体如何移动，才可能把视觉目标变成可执行动作。</p><p data-l="en">The report trains its IDM on roughly 400 hours of robot data including task-agnostic play, with human egocentric and NEO data aligning the video model <span class="cite">[<a href="#ref-53">53</a>]</span>. No robot demonstration of a task differs from no robot data anywhere in the system. The IDM must ground the body’s motion.</p><p data-l="zh">视觉未来也未必能唯一决定动作：相似的画面可以由不同受力、抓取或碰撞过程产生。单目视频尤其难确定深度和接触状态。选择视频作为接口，扩大了可利用的预训练数据，同时把部分可执行性判断交给了 IDM 和闭环反馈。</p><p data-l="en">Visual futures do not uniquely identify action: similar images can arise from different forces, grasps or contacts. Monocular depth adds ambiguity. Video interfaces expand usable pretraining data while assigning feasibility to inverse dynamics and feedback.</p></div></section><section class="sec" id="latency"><div class="wrap with-toc prose"><h2 class="sh"><span class="no">4</span><span data-l="zh">速度与生成质量怎样影响闭环</span><span data-l="en">Latency and generative quality in control</span></h2><p data-l="zh">2026 年一月报告给出的系统约需十一秒生成五秒视频，另需约一秒 IDM 推理，并讨论未来的闭环重规划 <span class="cite">[<a href="#ref-53">53</a>]</span>。这组数字对应当时的系统，说明视频生成能力与快速接触反应之间仍有距离。它不应被描述成已经具备低时延的连续反应控制。</p><p data-l="en">The January 2026 report describes about eleven seconds to generate five seconds of video and another second for IDM inference, discussing closed-loop replanning as future work <span class="cite">[<a href="#ref-53">53</a>]</span>. These are release-specific figures, illustrating the gap between video generation and fast contact reactions.</p><p data-l="zh">更好的生成质量可以减少明显错误的动作意图，但多次采样选最好结果也会增加等待和选择成本。评测必须说明是否使用人工筛选、多少次候选生成，以及时间从哪一步开始计算；只统计最终执行片段会隐藏这些成本。</p><p data-l="en">Better generations can reduce bad action intent, while selecting among candidates adds latency and selection cost. Report manual filtering, candidate counts and when the timer starts; measuring only the final execution hides preparation.</p></div></section><section class="sec" id="comparison"><div class="wrap with-toc prose"><h2 class="sh"><span class="no">5</span><span data-l="zh">与 Dyna、GR00T 2 的不同</span><span data-l="en">Contrast Dyna and GR00T 2</span></h2><p data-l="zh">1XWM 的视频 → IDM、<a href="../dyna/index.html">Dyna-2</a> 和 <a href="../nvidia/index.html">GR00T 2</a> 的联合视频动作建模，争论的是动作与世界预测如何耦合。分开学习便于复用视频生成器，却引入转换误差；联合学习可以对齐两种输出，但需要更复杂的混合训练。最终应比较闭环任务、计算预算与迁移，而不是只比较生成视频质量。</p><p data-l="en">1XWM’s video-to-IDM pipeline and joint modeling in <a href="../dyna/index.html">Dyna-2</a> and <a href="../nvidia/index.html">GR00T 2</a> differ in coupling. Separate stages reuse video generators but add conversion error; joint learning aligns outputs with a more complex recipe. Compare physical tasks, compute and transfer, beyond visual quality.</p><p data-l="zh">推荐先读 2025 年评测报告，再读 2026 年策略报告。把“世界模型是评测器”与“世界模型参与策略”分清，可以避免将预测准确率写成机器人的自主能力。</p><p data-l="en">Read the 2025 evaluator report before the 2026 policy report. Keeping these roles separate prevents prediction quality from being mistaken for robot autonomy.</p></div></section><section class="sec" id="refs"><div class="wrap with-toc prose"><h2 class="sh"><span data-l="zh">参考文献</span><span data-l="en">References</span></h2><ol class="refs" id="refList"><li id="ref-53"><span class="rn">[53]</span><div>1X AI Team. <span class="rt">From Video to Action: A New Way Robots Learn.</span> Jan. 12, 2026. <span class="rl"><a href="https://www.1x.tech/discover/world-model-self-learning" target="_blank" rel="noopener">Blog</a></span></div></li><li id="ref-54"><span class="rn">[54]</span><div>1X AI Team. <span class="rt">1X World Model: Evaluating Bits, not Atoms.</span> Jun. 2025. <span class="rl"><a href="https://www.1x.tech/discover/redwood-ai-world-model" target="_blank" rel="noopener">Blog</a> · <a href="https://www.1x.tech/1x-world-model.pdf" target="_blank" rel="noopener">Paper</a></span></div></li></ol><p><a href="../index.html#company-library">← <span data-l="zh">全部公司技术分析</span><span data-l="en">All company analyses</span></a> · <a href="../index.html#s-evaluation"><span data-l="zh">横向比较与争论</span><span data-l="en">Cross-company comparison</span></a></p></div></section></main><footer><div class="wrap"><span>Robot Learning KB · 2026-11-10</span><a href="../index.html">Physical AI Companies</a></div></footer><noscript><style>.mwrap>.ph[hidden]{display:block!important}.mtabs{display:none}</style></noscript><script data-bundle="site">(() => {
+/* Static HTML carries all media and references; JavaScript only enhances navigation. */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const L = v => `<span data-l="zh">${v.zh}</span><span data-l="en">${v.en}</span>`;
+const isHome = document.body.dataset.page === 'home';
+/* ---------- contents panel: list, section in view, reading progress ---------- */
+$(`#tocList`).innerHTML = $(`#tocInline > ol`).outerHTML;
+(() => {
+  const links = new Map($$(`#tocList a`).map((a) => [a.getAttribute(`href`).slice(1), a]));
+  const setOn = (id) => {
+    if (!links.has(id)) return;
+    links.forEach((a) => a.classList.remove(`on`));
+    links.get(id).classList.add(`on`);
+  };
+  const spy = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) setOn(e.target.id); });
+  }, { rootMargin: `-42% 0px -52% 0px` });
+  [...links.keys()].map((id) => document.getElementById(id)).filter(Boolean).forEach((el) => spy.observe(el));
+  const bar = $(`#tocBar`), pct = $(`#tocPct`);
+  let ticking = false;
+  const update = () => {
+    ticking = false;
+    const max = document.documentElement.scrollHeight - innerHeight;
+    const p = max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0;
+    bar.style.width = `${(p * 100).toFixed(1)}%`;
+    pct.textContent = `${Math.round(p * 100)}%`;
+  };
+  addEventListener(`scroll`, () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+  addEventListener(`resize`, update);
+  update();
+})();
+
+/* ---------- byline with reading time for the current language ---------- */
+function byline() {
+  const lang = document.documentElement.getAttribute(`data-lang`);
+  $(`#heroMeta`).textContent = lang === `zh`
+    ? `更新于 2026-11-10 · ${isHome ? '主题导航 · 图表 · Demo' : 'Robot Learning KB'} `
+    : `Updated 2026-11-10 · ${isHome ? 'Topics · Figures · Demos' : 'Robot Learning KB'}`;
+  // Preserve language on file:// links too, where localStorage is not shared consistently.
+  $$(`a[href]`).forEach(a => {
+    const raw = a.getAttribute('href');
+    if (raw.startsWith('#') || /^(?:[a-z][a-z\d+.-]*:|\/\/)/i.test(raw)) return;
+    const url = new URL(raw, 'https://kb.invalid/');
+    if (!url.pathname.endsWith('.html')) return;
+    url.searchParams.set('lang', lang);
+    // Keep the original relative path so embedded file previews can resolve it.
+    a.setAttribute('href', raw.split(/[?#]/, 1)[0] + url.search + url.hash);
+  });
+}
+byline();
+
+/* ---------- behaviour ---------- */
+$(`#lang`).addEventListener(`click`, () => {
+  const h = document.documentElement;
+  const next = h.getAttribute(`data-lang`) === `zh` ? `en` : `zh`;
+  h.setAttribute(`data-lang`, next);
+  h.lang = next === `zh` ? `zh-CN` : `en`;
+  try { localStorage.setItem(`kb-lang`, next); } catch (e) {}
+  try {
+    const url = new URL(location.href);
+    url.searchParams.set('lang', next);
+    history.replaceState(null, '', url);
+  } catch (e) {}
+  byline();
+});
+
+// Native controls and static posters work without this script.
+document.querySelectorAll('[data-algo-filter]').forEach(button => {
+  button.addEventListener('click', () => {
+    const filter = button.dataset.algoFilter;
+    document.querySelector('.algo-map')?.toggleAttribute('data-filtered', filter !== 'all');
+    document.querySelectorAll('[data-algo-filter]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
+    document.querySelectorAll('[data-algo-group]').forEach(group => {
+      group.hidden = filter !== 'all' && group.dataset.algoGroup !== filter;
+    });
+  });
+});
+
+$$('video').forEach(v => {
+  v.addEventListener('error', () => {
+    const note = v.closest('.ph').querySelector('.media-error');
+    if (note) note.hidden = false;
+  });
+});
+document.addEventListener('click', ev => {
+  const tab = ev.target.closest('.mtabs button');
+  if (!tab) return;
+  const wrap = tab.closest('.mwrap');
+  $$(':scope > .ph', wrap).forEach((box, index) => {
+    box.hidden = index !== Number(tab.dataset.m);
+    const v = box.querySelector('video');
+    if (v && box.hidden) v.pause();
+  });
+  $$('.mtabs button', wrap).forEach(b => b.setAttribute('aria-pressed', String(b === tab)));
+});
+
+// briefly highlight a reference when a citation jumps to it
+function highlightRef() {
+  const id = location.hash.slice(1);
+  if (!id.startsWith(`ref-`)) return;
+  const li = document.getElementById(id);
+  if (!li) return;
+  li.classList.add(`hl`);
+  setTimeout(() => li.classList.remove(`hl`), 1800);
+}
+window.addEventListener(`hashchange`, highlightRef);
+
+// Enable keyboard scrolling of wide comparison tables.
+$$(".tbl").forEach(t => {t.tabIndex = 0; t.setAttribute("role", "region"); if(!t.hasAttribute("aria-label")) t.setAttribute("aria-label", "Comparison table");});
+highlightRef();
+
+})();</script></body></html>

@@ -1,0 +1,43 @@
+[
+  {
+    "asset": "pi0-architecture.webp",
+    "paper": "https://arxiv.org/abs/2410.24164",
+    "figure": "3",
+    "page": 4
+  },
+  {
+    "asset": "pi05-architecture.webp",
+    "paper": "https://arxiv.org/abs/2504.16054",
+    "figure": "3",
+    "page": 4
+  },
+  {
+    "asset": "pi05-attention.webp",
+    "paper": "https://arxiv.org/abs/2504.16054",
+    "figure": "18",
+    "page": 19
+  },
+  {
+    "asset": "pi06-recap.webp",
+    "paper": "https://arxiv.org/abs/2511.14759",
+    "figure": "1",
+    "page": 1
+  },
+  {
+    "asset": "groot-n1-architecture.webp",
+    "paper": "https://arxiv.org/abs/2503.14734",
+    "figure": "3",
+    "page": 4
+  },
+  {
+    "asset": "omniretarget-pipeline.webp",
+    "paper": "https://arxiv.org/abs/2509.26633",
+    "source": "https://omniretarget.github.io/static/images/pipeline.png"
+  },
+  {
+    "asset": "supermimic-training.webp",
+    "paper": "https://arxiv.org/abs/2610.28480v2",
+    "figure": "2",
+    "page": 4
+  }
+]
